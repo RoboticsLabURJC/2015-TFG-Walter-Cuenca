@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Suma dos numeros con Ajax</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	<script type="text/javascript">
+	
+	var numbers = [];
+
+	function logs(info){
+		console.log(info);
+	}
+
+	function comprobar(id){	
+		var contenido = document.getElementById(id);
+		var numero = contenido.value;
+		if(numero != " "){
+			numbers.push(numero);
+		}
+		if(numbers.length == 2){
+			logs("envio peticiones");
+			loadDoc();
+			numbers = [];
+		}
+	}
+
+
+	function creat_query(){
+		return "num1="+numbers[0]+"&num2="+numbers[1];
+	}
+
+	
+	//una vez comprobamos que estan los dos numeros creamos las peticiones ajax
+	function loadDoc() {
+		var info = creat_query();
+  		var xhttp = new XMLHttpRequest();
+  		xhttp.onreadystatechange = function() {
+	    	if (xhttp.readyState == 4 && xhttp.status == 200) {
+	    		logs("recibo el contenido")
+	      		document.getElementById("resultado").value = xhttp.responseText;
+   			}
+   		};
+		xhttp.open("POST", "http://localhost:3000/", true);
+		xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		xhttp.send(info);
+		logs(info);
+	}
+
+
+	</script>
+</head>
+<body>
+	<p>Calculamos la suma de dos numeros</p>
+	<input type="number" id="first_num" onchange="comprobar('first_num')">
+	<p>+</p>
+	<input type="number" id="second_num" onchange="comprobar('second_num')" >
+	<p>=</p>
+	<input type="number" id="resultado" >
+</body>
+</html>
