@@ -1,15 +1,66 @@
 <html>
   <head>
     <title>Ejemplo Carrito_Compra</title>
+    <script>
+      var carrito;
+      var user;
+      window.onlooad() = creat_Car();
+      /////////////////////////////////
+      /// Iniciamos el carrito vacio //
+      ////////////////////////////////
+      function creat_Car(){
+        var carrito = [];
+      }
+      
+      /////////////////////////////////
+      /// Añadimos objeto al carrito //
+      ////////////////////////////////
+      
+      function añadir(id){
+        var elemento = document.getElementById("id");
+        var compra = {user:user,name_libro:elemento.name,src:elemento.src};
+        carrito.push(compra);
+        actualizar_cookie(carrito);
+      }
+      
+      //////////////////////////////////////////
+      /// Actualizamos contenido con el server //
+      //////////////////////////////////////////
+      
+      function actualizar_cookie(car){
+        //envio por ajax el nuevo contenido del usuario 
+       var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+          if (xhttp.readyState == 4 && xhttp.status == 200) {
+            //visualizamos el contenido actualizado de la cookie
+              ddocument.getElementById("view_car").innerHTML = document.cookie;
+           }
+        };
+        xhttp.open("POST", "localhost:3000/", true);
+        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhttp.send(JSON.stringify(car));
+      }
+      
+      //////////////////////////////////////////////////
+      /// El nombre del usuario para realizar pruebas //
+      /////////////////////////////////////////////////
+      
+      function new_user(){
+         user = document.getElementById("name_user").value;
+      }
+      
+    </script>
   </head>
   <body>
+    Nombre:<input type="text" id="name_user" onchange="new_user()">
+    <img name="hulk" id="primer" src =" "></img>
+      <button value="add_Cart" onclick="añadir('primer')">
+    <img name =""  src =" "></img>
+      <button value="add_Cart" onclick="añadir()">
     <img src =" "></img>
-      <button value="add_Cart">
+      <button value="add_Cart" onclick="añadir()">
     <img src =" "></img>
-      <button value="add_Cart">
-    <img src =" "></img>
-      <button value="add_Cart">
-    <img src =" "></img>
-      <button value="add_Cart">
+      <button value="add_Cart" onclick="añadir()">
+    <p id ="view_car"></p>
   </body>
 <html>
