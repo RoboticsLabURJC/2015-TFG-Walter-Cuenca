@@ -8,11 +8,19 @@ app.use(cookieParser());
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 
 
-//constestara cuando realicemos un get y devuleve un html con contenigo
+//////////////////////////////////////////
+// Entrega pagina inicial con productos //
+//////////////////////////////////////////
+
 app.get('/', function(req, res){
-  console.log("=== Primera conexion ===");
+  console.log("=== Se ha conectado un Browser ===");
   res.sendFile(__dirname + '/index.html');
 });
+
+
+/////////////////////////////////////
+// Limpiar el valor de las cookies //
+/////////////////////////////////////
 
 app.get('/clear', function(req, res){
  	res.clearCookie('luis');
@@ -20,55 +28,46 @@ app.get('/clear', function(req, res){
 	res.clearCookie('juan');
  	res.sendFile(__dirname + '/index.html');
 });
+
+
+/////////////////////////////////////////////
+// El usuario añade productos para comprar //
+////////////////////////////////////////////
+
   
 app.post('/',urlencodedParser,function(req,res){
-	console.log(req.cookies);
   console.log("=== El usuario añade producto  ===");
   for(elemento in req.body){
   	contenido = elemento;
   }
- console.log(contenido);
-
-  console.log(req.body);
-  var contenido = JSON.parse(contenido);
-  console.log(contenido);
+  contenido = JSON.parse(contenido);
   var user = contenido[0].user;
   var info_user = {src:contenido[0].src,name_libro:contenido[0].name_libro};
+  console.log("info_user");
   console.log(user);
   console.log(info_user);
-  //buscamos el usuario para refrescar el contenido de nuestro carrito
-
+  //buscamos el usuario para refrescar el contenido de nuestro carri
+  console.log("Old Content:");
   var value_old = req.cookies[user];
   console.log(value_old);
   if(value_old == null){
     console.log("=== El usuario 0 productos  ===");
     var list = [];
     list.push(info_user);
-    ///revisar con lo encontrado del parser de NODEJS-COOKIES
-    //res.cookie(user,JSON.stringify(list));
-    var lis = cookieParser.JSONCookies("{juan:pedro}");
-    //ar value = cookieParser.JSONCookies(req.cookies["walter"]);
-
-    //res.cookie(user,JSON.stringify(list));
-    cookieParser(res.cookie(user,JSON.stringify(list)));
-    console.log(req.cookies);
-
-   // cookieParser.signedCookies(res.cookies, secret)
-
-   
+    res.cookie(user,JSON.stringify(list),{encode: String});
     res.sendFile(__dirname + '/index.html');
   }else{
     console.log("=== El usuario añade mas productos a los antiguos  ===");
-    console.log(value_old);
     value_old = JSON.parse(value_old);
     value_old.push(info_user);
+    console.log("New Content:");
     console.log(value_old);
-    res.cookie(user,JSON.stringify(value_old));
+    res.cookie(user,JSON.stringify(value_old),{encode: String});
     res.sendFile(__dirname + '/index.html');
   }
 });
   
-//este es el puerto en el cual escuchara las conexiones que se establecen
+
 http.listen(3000, function(){
  	console.log('listening on *:3000');
 });
