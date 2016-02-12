@@ -4,12 +4,15 @@
     <script>
       var carrito;
       var user;
-      window.onlooad() = creat_Car();
+
+      console.log(document.cookie);
+
       /////////////////////////////////
       /// Iniciamos el carrito vacio //
       ////////////////////////////////
       function creat_Car(){
-        var carrito = [];
+        console.log("creando carrito");
+        carrito = [];
       }
       
       /////////////////////////////////
@@ -17,8 +20,9 @@
       ////////////////////////////////
       
       function añadir(id){
-        var elemento = document.getElementById("id");
+        var elemento = document.getElementById(id);
         var compra = {user:user,name_libro:elemento.name,src:elemento.src};
+        console.log(compra);
         carrito.push(compra);
         actualizar_cookie(carrito);
       }
@@ -33,10 +37,10 @@
         xhttp.onreadystatechange = function() {
           if (xhttp.readyState == 4 && xhttp.status == 200) {
             //visualizamos el contenido actualizado de la cookie
-              ddocument.getElementById("view_car").innerHTML = document.cookie;
+              document.getElementById("view_car").innerHTML = document.cookie;
            }
         };
-        xhttp.open("POST", "localhost:3000/", true);
+        xhttp.open("POST", "http://localhost:3000/", true);
         xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
         xhttp.send(JSON.stringify(car));
       }
@@ -51,16 +55,16 @@
       
     </script>
   </head>
-  <body>
+  <body onload="creat_Car()" >
     Nombre:<input type="text" id="name_user" onchange="new_user()">
-    <img name="hulk" id="primer" src =" "></img>
+    <img name="hulk" id="primer" src =""></img>
       <button value="add_Cart" onclick="añadir('primer')">
     <img name =""  src =" "></img>
-      <button value="add_Cart" onclick="añadir()">
+      <button value="add_Cart" onclick="añadir('segundo')">
     <img src =" "></img>
-      <button value="add_Cart" onclick="añadir()">
+      <button value="add_Cart" onclick="añadir('tercero')">
     <img src =" "></img>
-      <button value="add_Cart" onclick="añadir()">
+      <button value="add_Cart" onclick="añadir('cuarto')">
     <p id ="view_car"></p>
   </body>
 <html>
