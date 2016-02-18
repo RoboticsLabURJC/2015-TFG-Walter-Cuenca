@@ -33,67 +33,106 @@
         carrito = [];
       }
       
-      /////////////////////////////////
-      /// Añadimos objeto al carrito //
-      ////////////////////////////////
+      function read_cookie(){
+        var cookies = document.cookie;
+      }
       
-      function añadir(id){
-        if(user != null){
-          var elemento = document.getElementById(id);
-          var compra = {user:user,name_libro:elemento.name,src:elemento.src};
-          console.log(compra);
-          carrito.push(compra);
-          actualizar_cookie(carrito);
+      ///////////////////////////////////////////////
+      /// Buscamos usuario para darle el contenido //
+      ///////////////////////////////////////////////
+      
+      function SeekUser(){
+      user = document.getElementById("name_user").value;
+      var existe = getCookie(user);
+        if(existe != null){
+          view_Car(exite);
+        }else{
+          view_Car(existe);
         }
       }
       
-      //////////////////////////////////////////
-      /// Actualizamos contenido con el server //
-      //////////////////////////////////////////
+      ///////////////////////////////////////////////
+      /// Añadiamos el nuevo producto al contenido //
+      ///////////////////////////////////////////////
       
-      function actualizar_cookie(car){
-        //envio por ajax el nuevo contenido del usuario 
-       var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-          if (xhttp.readyState == 4 && xhttp.status == 200) {
-            //visualizamos el contenido actualizado de la cookie
-              document.getElementById("view_car").innerHTML = document.cookie;
-           }
-        };
-        xhttp.open("POST", "http://localhost:3000/", true);
-        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        xhttp.send(JSON.stringify(car));
+      function Añadir(id){
+        var elemento = document.getElementById(id);
+        var compra = {name_libro:elemento.name,src:elemento.src};
+        ///buscamos si existe el usuaario con el contenido
+        var existe = getCookie(user);
+        if(existe != null){
+          existe = JSON.parse(existe);
+          existe.push(compra);
+          setcookie(user,JSON.stringlfy(existe));
+        }else{
+          var list = [];
+          list.push(compra);
+          setcookie(user,JSON.stringlfy(list));
+        }
       }
       
-      //////////////////////////////////////////////////
-      /// El nombre del usuario para realizar pruebas //
-      /////////////////////////////////////////////////
       
-      function new_user(){
-         user = document.getElementById("name_user").value;
+      function View_Car(existe){
+        var p = "vacio";
+        consola.log("===Contenido Carrito===");
+        if(existe != null){
+          p = JSON.parse(existe);
+          consola.log(p);
+        }else{
+          console.log(p) 
+        }
       }
+      
+    /////////////////////////////////////////////////
+    /// Funciones que me permiten tratar la cookie //
+    ////////////////////////////////////////////////
+      function getCookie(name){
+          var cname = name + "=";               
+          var dc = document.cookie;             
+          if (dc.length > 0) {              
+            begin = dc.indexOf(cname);       
+            if (begin != -1) {           
+              begin += cname.length;       
+              end = dc.indexOf(";", begin);
+              if (end == -1) end = dc.length;
+                return unescape(dc.substring(begin, end));
+            } 
+          }
+          return null;
+        }
+      
+      function setCokie(name,compra){
+        document.cookie = name + "=" + JSON.stringlfy(compra);
+      }
+      
+      ///falta funcion send compra 
+      
+      
+      
     </script>
   </head>
   
   <body onload="creat_Car()">
-    Nombre:<input type="text" id="name_user" onchange="new_user()">
+    Nombre:<input type="text" id="name_user" onchange="SeekUser()">
+    <button type="button" onclick="send_compra()">Comprar</button>
     <br>
     <div>
-      <img name="hulk" id="primer" src ="" alt="hulk"></img>
+      <img name="hulk" id="primer" src ="localhost:3000/imagenes/hulk" alt="hulk"></img>
       <button onclick="añadir('primer')">Add</button>
     </div>
    <div>
-      <img name ="curso fotografia" id="segundo" src ="" alt="curso fotografia"></img>
+      <img name ="curso fotografia" id="segundo" src ="localhost:3000/imagenes/curso" alt="curso fotografia"></img>
       <button onclick="añadir('segundo')">Add</button>
    </div>
     <div>
-      <img name ="vengadores" id="tercero" src =""  alt="vengadores"></img>
+      <img name ="vengadores" id="tercero" src ="localhost:3000/imagenes/vengadores" alt="vengadores"></img>
       <button onclick="añadir('tercero')">Add</button>     
     </div>
     <div>
-      <img name ="analisis" id="cuarto" src ="" alt="analisis"></img>
+      <img name ="analisis" id="cuarto" src ="localhost:3000/imagenes/analisis" alt="analisis"></img>
       <button type="button" onclick="añadir('cuarto')">Add</button>
     </div>
+    
     <p id ="view_car"></p>
   </body>
 <html>
