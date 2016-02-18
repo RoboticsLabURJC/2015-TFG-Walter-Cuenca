@@ -4,6 +4,11 @@ var http = require('http').Server(app);
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 
+///cargar imagenes de forma static ---> el path que se utiliza es /imagenes/[name_img]
+app.user(express.static('public'));
+
+
+
 app.use(cookieParser());
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 
