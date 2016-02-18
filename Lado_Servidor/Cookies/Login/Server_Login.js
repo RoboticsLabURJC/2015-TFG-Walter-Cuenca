@@ -13,9 +13,20 @@ var urlencodedParser = bodyParser.urlencoded({ extended: false })
 ////////////////////////////////////////
 
 app.get('/', function(req, res){
-	console.log("=== Se ha conectado un browser ===");
-	console.log(req.cookies);
-  	res.sendFile(__dirname + '/Login.html');
+console.log("==================================");
+console.log("=== Se ha conectado un browser ===");
+console.log("==================================");
+	var cookie = req.cookies;
+	if(cookie != null)
+		console.log("=== Usuario reconocido ===");
+		console.log(req.cookies);
+		//tenemos que decirle al usuario alguna informacion de su antigua sesion
+		res.sendFile(__dirname + '/Bienvenida.html');
+	else{
+		console.log("=== Nuevo Usuario ===");
+		//tenemos un usuario nuevo he enviamos el login para guardarlo
+		res.sendFile(__dirname + '/Login.html');
+	}
 });
 
 /////////////////////////////////////
