@@ -2,15 +2,15 @@
 <html>
 <head>
 	<title>Ejemplo Cookie_Login</title>
-	<script type="text/javascript">
-		console.log( document.cookie);
-	</script>
 </head>
 <body>
 	<form action="/login" method="POST">
-		<input  id ="name"   name="first_name" type="text"  placeholder="Name">
-		<input 	id ="lastname"  name="last_name" type="text"  placeholder="LastName">
-		<input type="submit" value="Login" >
+		<input name="first_name" type="text"  placeholder="Name">
+		<input name="last_name" type="text"  placeholder="LastName">
+		<br>
+		<br>
+		<input type="email" name="email" placeholder="E-mail">
+		<input type="submit" value="Login">
 	</form>
 </body>
 </html>

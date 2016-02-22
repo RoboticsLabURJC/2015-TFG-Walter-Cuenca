@@ -13,20 +13,20 @@ var urlencodedParser = bodyParser.urlencoded({ extended: false })
 ////////////////////////////////////////
 
 app.get('/', function(req, res){
-console.log("==================================");
-console.log("=== Se ha conectado un browser ===");
-console.log("==================================");
+	console.log("==================================");
+	console.log("=== Se ha conectado un browser ===");
+	console.log("==================================");
 	var cookie = req.cookies;
-	if(cookie != null)
-		console.log("=== Usuario reconocido ===");
-		console.log(req.cookies);
-		//tenemos que decirle al usuario alguna informacion de su antigua sesion
-		res.sendFile(__dirname + '/Bienvenida.html');
-	else{
-		console.log("=== Nuevo Usuario ===");
+	if(Object.keys(cookie).length != 0){
+		console.log(" >>> Usuario reconocido");
+		console.log( req.cookies);
+		res.sendFile(__dirname + '/Index_Bienvenida.html');
+	}else{
 		//tenemos un usuario nuevo he enviamos el login para guardarlo
+		console.log(" >>> Nuevo Usuario ");
 		res.sendFile(__dirname + '/Login.html');
 	}
+
 });
 
 /////////////////////////////////////
@@ -34,11 +34,7 @@ console.log("==================================");
 /////////////////////////////////////
 
 app.get('/clearcookie', function(req, res){
-	res.clearCookie("walter");
-	res.clearCookie("user1");
-	res.clearCookie("juan");
-	res.clearCookie("luis");
-	res.clearCookie("[object Object]");
+	res.clearCookie("user");
 	res.sendFile(__dirname + '/Login.html');
 });
 
@@ -48,57 +44,27 @@ app.get('/clearcookie', function(req, res){
 ///////////////////////////////////
 
 app.post("/login",urlencodedParser,function(req,res){
+	console.log("======================================");
+	console.log("=== Procesando el formulario lleno ===");
+	console.log("======================================");
+	var d = new Date();
+	var hora = d.getHours()+':'+d.getMinutes()+':'+d.getSeconds();
+	var fecha = d.getDate() + "/" + (d.getMonth() +1) + "/" + d.getFullYear();
 	var info_user = {names:req.body.first_name,
-					last_name:req.body.last_name};
+					last_name:req.body.last_name,
+					correo:req.body.email,
+					num_visitas:1,
+					Fecha:hora};
+
 	var cookie = req.cookies;
-	if(String(cookie["user1"]) == 'undefined'){
-		console.log("=== Req.cookies esta vacio ===");
-		res.cookie("user1",JSON.stringify(info_user),{encode: String});
-		console.log("añadido nuevo Usuario");
-		res.sendFile(__dirname + '/Login.html');
-	}else{
-		console.log("===  Req.cookies con contenido ===");
-		var seek = seek_user(cookie,info_user);
-		if(seek == true){
-			console.log("=== Usuario dentro de la Cookie ===");
-			res.sendFile(__dirname + '/Login.html');
-			//res.sendFile(__dirname + '/Old_User.html');
-		}else{
-			console.log("=== Usuario no existente en la Cookie ===");
-			var user = set_cookie(info_user,cookie);
-			res.cookie(user,JSON.stringify(info_user),{encode: String});
-			console.log("añadido nuevo Usuario");
-			res.sendFile(__dirname + '/Login.html');
-		}                               
-	}	
+	console.log(" >>> Cookie Vacia");
+	console.log(cookie);
+	console.log(" >>> Añadimos a la cookie a: " + info_user.names);
+	res.cookie('user',JSON.stringify(info_user),{encode: String});
+	console.log(req.cookies);
+	res.sendFile(__dirname + '/Index_Bienvenida.html');
+
 });
-
-///////////////////////////////////////////////
-// Funciones auxiliares para tratar el login //
-///////////////////////////////////////////////
-
-
-function set_cookie(info_user,cookies){
-	var contador = 0;
-	for(user in cookies){
-		 contador = contador + 1;
-	}
-	contador = contador+1;
-	return "user"+contador;
-}
-
-
-
-function seek_user(cookies,info_user){
-	var lleno = false;
-	for(user in cookies){
-		console.log(cookies[user]);
-		if(cookies[user] == (info_user)){
-			lleno= true;
-		}
-	}
-	return lleno;
-}
 
 
 ///////////////////////////////////
