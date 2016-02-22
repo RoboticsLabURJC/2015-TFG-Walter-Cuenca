@@ -1,6 +1,7 @@
 <html>
   <head>
     <title>Ejemplo Carrito_Compra</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
     <style type="text/css">
       div {
         /*border:solid;*/
@@ -22,117 +23,125 @@
     </style>
 
     <script>
-      var carrito;
       var user;
+      var contador;
+
       console.log(document.cookie);
-      /////////////////////////////////
-      /// Iniciamos el carrito vacio //
-      ////////////////////////////////
-      function creat_Car(){
-        console.log("creando carrito");
-        carrito = [];
-      }
-      
-      function read_cookie(){
-        var cookies = document.cookie;
-      }
-      
+  
       ///////////////////////////////////////////////
       /// Buscamos usuario para darle el contenido //
       ///////////////////////////////////////////////
       
-      function SeekUser(){
-      user = document.getElementById("name_user").value;
-      var existe = getCookie(user);
+    function SeekUser(){
+	    console.log("==========================");
+	    console.log("=== Buscamos info user ===");
+	    console.log("==========================");
+    	user = document.getElementById("name_user").value;
+   		var existe = getCookie(user);
+   		console.log("-->>> Buscamos contenido de "+user+"= "+JSON.parse(existe));
         if(existe != null){
-          view_Car(exite);
+          View_Car(existe);
         }else{
-          view_Car(existe);
+          View_Car(existe);
         }
-      }
+    }
       
       ///////////////////////////////////////////////
       /// Añadiamos el nuevo producto al contenido //
       ///////////////////////////////////////////////
       
-      function Añadir(id){
+    function Añadir(id){
+      	console.log("=======================================");
+      	console.log("=== Se añade un producto al carrito ===");
+      	console.log("=======================================");
         var elemento = document.getElementById(id);
-        var compra = {name_libro:elemento.name,src:elemento.src};
+        var compra = {libro:elemento.name,cantidad:'1'};
         ///buscamos si existe el usuaario con el contenido
         var existe = getCookie(user);
+       console.log("-->>> Buscamos contenido de "+user+"= "+JSON.parse(existe));
         if(existe != null){
-          existe = JSON.parse(existe);
-          existe.push(compra);
-          setcookie(user,JSON.stringlfy(existe));
+	       	old_item = JSON.parse(existe);
+	        var carrito = old_item.carrito;
+	        carrito.push({compra:compra});
+	        old_item = {carrito:carrito};
+	        console.log("-->>> Se añadio el nuevo elemento: "+JSON.stringify(old_item));
+	        console.log(old_item);
+	        setCokie(user,old_item);
         }else{
-          var list = [];
-          list.push(compra);
-          setcookie(user,JSON.stringlfy(list));
+        	var obj = {compra:compra};
+	        var list =[obj];
+	        var car = {carrito:list};
+	        console.log("-->>> Añadimos primer producto: "+ compra.libro);
+	        setCokie(user,car);
+	        console.log(obj);
         }
-      }
-      
-      
-      function View_Car(existe){
-        var p = "vacio";
-        consola.log("===Contenido Carrito===");
+    }
+
+    function View_Car(existe){
+    	var p = "vacio";
+        console.log("=======================");
+        console.log("===Contenido Carrito===");
+        console.log("=======================");
         if(existe != null){
-          p = JSON.parse(existe);
-          consola.log(p);
+          var old_item = JSON.parse(existe);
+	      var carrito = old_item.carrito;
+	      for(var i=0;i < carrito.length;i++){
+	      	var compra = carrito[i].compra;
+	      	$('#view_car').append('<p><strong>Libro:'+compra.libro+';Unidades:'+compra.cantidad+'</strong></p>');
+	      }
+          console.log(p);
         }else{
-          console.log(p) 
+         $('#view_car').append('<p><strong>El carrito esta:'+p+'</strong></p>');
         }
-      }
+    }
       
     /////////////////////////////////////////////////
     /// Funciones que me permiten tratar la cookie //
     ////////////////////////////////////////////////
-      function getCookie(name){
-          var cname = name + "=";               
-          var dc = document.cookie;             
-          if (dc.length > 0) {              
-            begin = dc.indexOf(cname);       
+    function getCookie(name){
+        var cname = name + "=";               
+        var dc = document.cookie;             
+        if (dc.length > 0) {              
+        	begin = dc.indexOf(cname);       
             if (begin != -1) {           
-              begin += cname.length;       
-              end = dc.indexOf(";", begin);
-              if (end == -1) end = dc.length;
-                return unescape(dc.substring(begin, end));
-            } 
-          }
-          return null;
-        }
+            	begin += cname.length;       
+            	end = dc.indexOf(";", begin);
+            	if (end == -1) end = dc.length;
+            		return unescape(dc.substring(begin, end));
+            	} 
+          	}
+        return null;
+    }
       
-      function setCokie(name,compra){
-        document.cookie = name + "=" + JSON.stringlfy(compra);
-      }
-      
-      ///falta funcion send compra 
-      
-      
-      
+    function setCokie(name,compra){
+        document.cookie = name + "=" + JSON.stringify(compra);
+    }
+     
     </script>
   </head>
-  
-  <body onload="creat_Car()">
-    Nombre:<input type="text" id="name_user" onchange="SeekUser()">
-    <button type="button" onclick="send_compra()">Comprar</button>
+  <body>
+  <form action="http://localhost:3000/" method="POST" onsubmit="user">
+  	Nombre:<input type="text" name="user" id="name_user" onchange="SeekUser()">
+    <input type="submit" value="Submit">
+  </form>
     <br>
     <div>
-      <img name="hulk" id="primer" src ="localhost:3000/imagenes/hulk" alt="hulk"></img>
-      <button onclick="añadir('primer')">Add</button>
+      <img name="hulk" id="primer" src ="http://localhost:3000/imagenes/hulk.jpg"></img>
+      <button onclick="Añadir('primer')">Add</button>
     </div>
    <div>
-      <img name ="curso fotografia" id="segundo" src ="localhost:3000/imagenes/curso" alt="curso fotografia"></img>
-      <button onclick="añadir('segundo')">Add</button>
+      <img name ="curso fotografia" id="segundo" src ="http://localhost:3000/imagenes/curso.jpg"></img>
+      <button onclick="Añadir('segundo')">Add</button>
    </div>
     <div>
-      <img name ="vengadores" id="tercero" src ="localhost:3000/imagenes/vengadores" alt="vengadores"></img>
-      <button onclick="añadir('tercero')">Add</button>     
+      <img name ="vengadores" id="tercero" src ="http://localhost:3000/imagenes/vengadores.jpg"></img>
+      <button onclick="Añadir('tercero')">Add</button>     
     </div>
     <div>
-      <img name ="analisis" id="cuarto" src ="localhost:3000/imagenes/analisis" alt="analisis"></img>
-      <button type="button" onclick="añadir('cuarto')">Add</button>
+      <img name ="analisis" id="cuarto" src ="http://localhost:3000/imagenes/analisis.jpg"></img>
+      <button type="button" onclick="Añadir('cuarto')">Add</button>
     </div>
     
-    <p id ="view_car"></p>
+    <div id ="view_car"></div>
   </body>
 <html>
