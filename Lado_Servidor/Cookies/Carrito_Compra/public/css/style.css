@@ -1,0 +1,35 @@
+#imagenes{ 
+      width: 100px;
+      float: left;
+      margin:4px;
+    }
+
+    img{
+      border:solid;
+      width: 90px;
+      height: 130px;
+    }
+
+    #videos{ 
+      width: 405px;
+      float: left;
+      margin:4px;
+    }
+
+    video{
+      width: 400px;
+    }
+
+    button{
+      margin-top:2px;
+      width: 40px;
+      height: 20px;
+      border-radius:4px; 
+    }
+
+
+    #genero{
+      clear: both;
+    }
+
+    /*div{border:solid;}*/

@@ -2,146 +2,53 @@
   <head>
     <title>Ejemplo Carrito_Compra</title>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
-    <style type="text/css">
-      div {
-        /*border:solid;*/
-        margin-top: 4px;
-        margin:left; 
-        width: 140px;
-        height: 120px;
-      }
-
-      img{
-        border:solid;
-        width: 80px;
-        height: 100px;
-      }
-      button{
-        width: 40px;
-        height: 20px;
-      }
-    </style>
-
-    <script>
-      var user;
-      var contador;
-
-      console.log(document.cookie);
-  
-      ///////////////////////////////////////////////
-      /// Buscamos usuario para darle el contenido //
-      ///////////////////////////////////////////////
-      
-    function SeekUser(){
-	    console.log("==========================");
-	    console.log("=== Buscamos info user ===");
-	    console.log("==========================");
-    	user = document.getElementById("name_user").value;
-   		var existe = getCookie(user);
-   		console.log("-->>> Buscamos contenido de "+user+"= "+JSON.parse(existe));
-        if(existe != null){
-          View_Car(existe);
-        }else{
-          View_Car(existe);
-        }
-    }
-      
-      ///////////////////////////////////////////////
-      /// Añadiamos el nuevo producto al contenido //
-      ///////////////////////////////////////////////
-      
-    function Añadir(id){
-      	console.log("=======================================");
-      	console.log("=== Se añade un producto al carrito ===");
-      	console.log("=======================================");
-        var elemento = document.getElementById(id);
-        var compra = {libro:elemento.name,cantidad:'1'};
-        ///buscamos si existe el usuaario con el contenido
-        var existe = getCookie(user);
-       console.log("-->>> Buscamos contenido de "+user+"= "+JSON.parse(existe));
-        if(existe != null){
-	       	old_item = JSON.parse(existe);
-	        var carrito = old_item.carrito;
-	        carrito.push({compra:compra});
-	        old_item = {carrito:carrito};
-	        console.log("-->>> Se añadio el nuevo elemento: "+JSON.stringify(old_item));
-	        console.log(old_item);
-	        setCokie(user,old_item);
-        }else{
-        	var obj = {compra:compra};
-	        var list =[obj];
-	        var car = {carrito:list};
-	        console.log("-->>> Añadimos primer producto: "+ compra.libro);
-	        setCokie(user,car);
-	        console.log(obj);
-        }
-    }
-
-    function View_Car(existe){
-    	var p = "vacio";
-        console.log("=======================");
-        console.log("===Contenido Carrito===");
-        console.log("=======================");
-        if(existe != null){
-          var old_item = JSON.parse(existe);
-	      var carrito = old_item.carrito;
-	      for(var i=0;i < carrito.length;i++){
-	      	var compra = carrito[i].compra;
-	      	$('#view_car').append('<p><strong>Libro:'+compra.libro+';Unidades:'+compra.cantidad+'</strong></p>');
-	      }
-          console.log(p);
-        }else{
-         $('#view_car').append('<p><strong>El carrito esta:'+p+'</strong></p>');
-        }
-    }
-      
-    /////////////////////////////////////////////////
-    /// Funciones que me permiten tratar la cookie //
-    ////////////////////////////////////////////////
-    function getCookie(name){
-        var cname = name + "=";               
-        var dc = document.cookie;             
-        if (dc.length > 0) {              
-        	begin = dc.indexOf(cname);       
-            if (begin != -1) {           
-            	begin += cname.length;       
-            	end = dc.indexOf(";", begin);
-            	if (end == -1) end = dc.length;
-            		return unescape(dc.substring(begin, end));
-            	} 
-          	}
-        return null;
-    }
-      
-    function setCokie(name,compra){
-        document.cookie = name + "=" + JSON.stringify(compra);
-    }
-     
-    </script>
+    <link rel="stylesheet" type="text/css" href="http://localhost:3000/css/style.css">
+    <script src="http://localhost:3000/js/carrito.js"></script>
   </head>
   <body>
   <form action="http://localhost:3000/" method="POST" onsubmit="user">
   	Nombre:<input type="text" name="user" id="name_user" onchange="SeekUser()">
     <input type="submit" value="Submit">
   </form>
-    <br>
-    <div>
+  <br>
+  
+  <p id="genero">Seccion de libros</p>
+    <div id="imagenes">
       <img name="hulk" id="primer" src ="http://localhost:3000/imagenes/hulk.jpg"></img>
       <button onclick="Añadir('primer')">Add</button>
     </div>
-   <div>
+   <div id="imagenes">
       <img name ="curso fotografia" id="segundo" src ="http://localhost:3000/imagenes/curso.jpg"></img>
       <button onclick="Añadir('segundo')">Add</button>
    </div>
-    <div>
+    <div id="imagenes">
       <img name ="vengadores" id="tercero" src ="http://localhost:3000/imagenes/vengadores.jpg"></img>
       <button onclick="Añadir('tercero')">Add</button>     
     </div>
-    <div>
+    <div id="imagenes">
       <img name ="analisis" id="cuarto" src ="http://localhost:3000/imagenes/analisis.jpg"></img>
       <button type="button" onclick="Añadir('cuarto')">Add</button>
     </div>
-    
-    <div id ="view_car"></div>
+  
+
+  <p id="genero">Seccion de Peliculas</p>
+    <div id="videos">
+      <video name="batman" id="quinto" src="http://localhost:3000/video/Batman_ vs_Superman.mp4" controls></video>
+      <button type="button" onclick="Añadir('quinto')">Add</button>
+    </div>
+
+    <div id="videos">
+      <video name="x_men" id="sexto" src="http://localhost:3000/video/X-Men-Apocalypse.mp4" controls></video>
+      <button type="button" onclick="Añadir('sexto')">Add</button>
+    </div>
+
+  <p id="genero">Seccion de Musica</p>
+   <audio src="http://localhost:3000/audio/Dutty Love.mp3" controls></audio>
+
+
+<button onclick="View_Car()" on>Car</button>
+<div id ="view_car">
+  <ul id="elementos"></ul>
+</div>
   </body>
 <html>

@@ -1,4 +1,3 @@
-
 var express=require('express');
 var app = express();
 var http = require('http').Server(app);
@@ -6,12 +5,9 @@ var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 
 ///cargar imagenes de forma static ---> el path que se utiliza es /imagenes/[name_img]
-
 app.use(express.static('public'));
-
 app.use(cookieParser()); //-->necesario para el parser el cookie 
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
-
 
 //////////////////////////////////////////
 // Entrega pagina inicial con productos //
