@@ -7,7 +7,6 @@ app.use(cookieParser());
 //lo utulizamos para peticiones POST a nuestro servidor.
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 
-
 ////////////////////////////////////////
 // Entrega pagina inicial para logear //
 ////////////////////////////////////////
@@ -38,7 +37,6 @@ app.get('/clearcookie', function(req, res){
 	res.sendFile(__dirname + '/Login.html');
 });
 
-
 ///////////////////////////////////
 // Comienza el login del Usuario //
 ///////////////////////////////////
@@ -65,7 +63,6 @@ app.post("/login",urlencodedParser,function(req,res){
 	res.sendFile(__dirname + '/Index_Bienvenida.html');
 
 });
-
 
 ///////////////////////////////////
 // Comienza el login del Usuario //

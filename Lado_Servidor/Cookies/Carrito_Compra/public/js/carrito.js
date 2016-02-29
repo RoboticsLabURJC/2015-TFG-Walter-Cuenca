@@ -56,6 +56,7 @@ function SeekUser(){
         console.log("=======================");
         console.log("===Contenido Carrito===");
         console.log("=======================");
+        $('#elementos').remove('li');
         if(existe != null){
           var old_item = JSON.parse(existe);
           var carrito = old_item.carrito;
@@ -67,7 +68,6 @@ function SeekUser(){
         }else{
           $('#elementos').append('<li><strong>El carrito esta:'+p+'</strong></li>');
         }
-       // $("#view_car").hide();
     }
       
     /////////////////////////////////////////////////

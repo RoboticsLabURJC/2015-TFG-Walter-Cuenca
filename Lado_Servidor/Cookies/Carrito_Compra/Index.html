@@ -4,6 +4,32 @@
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
     <link rel="stylesheet" type="text/css" href="http://localhost:3000/css/style.css">
     <script src="http://localhost:3000/js/carrito.js"></script>
+
+    <script type="text/javascript">
+    var canvas;
+    var imageObj = new Image();
+    imageObj.onload = function(){
+        canvas = document.getElementById('canvasmusic');
+        console.log(canvas);
+        var context = canvas.getContext('2d');
+        console.log(context);
+        context.drawImage(imageObj, 0, 0,canvas.width,canvas.height);
+        canvas.addEventListener('click',repro,true);
+      };
+    imageObj.src = 'http://localhost:3000/audio/Portada2.jpg';
+  
+    function repro(){
+      var audio = document.getElementById('septimo');
+      if(audio.paused){
+        audio.play();
+      }else{
+        audio.pause();
+      }
+    }
+
+    </script>
+
+
   </head>
   <body>
   <form action="http://localhost:3000/" method="POST" onsubmit="user">
@@ -11,6 +37,10 @@
     <input type="submit" value="Submit">
   </form>
   <br>
+  <button onclick="View_Car()" on>Car</button>
+  <div id ="view_car">
+      <ul id="elementos"></ul>
+  </div>
   
   <p id="genero">Seccion de libros</p>
     <div id="imagenes">
@@ -43,12 +73,10 @@
     </div>
 
   <p id="genero">Seccion de Musica</p>
-   <audio src="http://localhost:3000/audio/Dutty Love.mp3" controls></audio>
-
-
-<button onclick="View_Car()" on>Car</button>
-<div id ="view_car">
-  <ul id="elementos"></ul>
-</div>
+  <div id="audio">
+    <canvas id="canvasmusic"></canvas>
+    <button type="button" onclick="Añadir('septimo')">Add</button>
+    <audio  id ="septimo" src="http://localhost:3000/audio/Dutty Love.mp3" hidden controls></audio>
+  </div>
   </body>
 <html>

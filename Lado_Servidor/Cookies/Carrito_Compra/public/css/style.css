@@ -32,4 +32,15 @@
       clear: both;
     }
 
+    #audio{ 
+      width: 204px;
+      float: left;
+      margin:4px;
+    }
+
+    #canvasmusic{
+      width: 200px;
+      height: 170px;
+    }
+
     /*div{border:solid;}*/
