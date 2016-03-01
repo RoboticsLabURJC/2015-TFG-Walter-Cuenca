@@ -29,10 +29,10 @@ function SeekUser(){
       	console.log("=== Se añade un producto al carrito ===");
       	console.log("=======================================");
         var elemento = document.getElementById(id);
-        var compra = {libro:elemento.name,cantidad:'1'};
+        var compra = {producto:elemento.src,cantidad:'1'};
         ///buscamos si existe el usuaario con el contenido
         var existe = getCookie(user);
-       console.log("-->>> Buscamos contenido de "+user+"= "+JSON.parse(existe));
+        console.log("-->>> Buscamos contenido de "+user+"= "+JSON.parse(existe));
         if(existe != null){
 	       	old_item = JSON.parse(existe);
 	        var carrito = old_item.carrito;
@@ -62,7 +62,9 @@ function SeekUser(){
           var carrito = old_item.carrito;
           for(var i=0;i < carrito.length;i++){
 	      	  var compra = carrito[i].compra;
-	      	  $('#elementos').append('<li><strong>Libro:'+compra.libro+';Unidades:'+compra.cantidad+'</strong></li>');
+            var producto = compra.producto.split('/').slice(-1);
+            console.log(producto);
+	      	  $('#elementos').append('<li><strong>producto:'+producto+';Unidades:'+compra.cantidad+'</strong></li>');
           }
           console.log(p);
         }else{

@@ -1,35 +1,11 @@
+<!DOCTYPE html>
 <html>
   <head>
     <title>Ejemplo Carrito_Compra</title>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
     <link rel="stylesheet" type="text/css" href="http://localhost:3000/css/style.css">
     <script src="http://localhost:3000/js/carrito.js"></script>
-
-    <script type="text/javascript">
-    var canvas;
-    var imageObj = new Image();
-    imageObj.onload = function(){
-        canvas = document.getElementById('canvasmusic');
-        console.log(canvas);
-        var context = canvas.getContext('2d');
-        console.log(context);
-        context.drawImage(imageObj, 0, 0,canvas.width,canvas.height);
-        canvas.addEventListener('click',repro,true);
-      };
-    imageObj.src = 'http://localhost:3000/audio/Portada2.jpg';
-  
-    function repro(){
-      var audio = document.getElementById('septimo');
-      if(audio.paused){
-        audio.play();
-      }else{
-        audio.pause();
-      }
-    }
-
-    </script>
-
-
+    <script src="http://localhost:3000/js/repromusica.js"></script>
   </head>
   <body>
   <form action="http://localhost:3000/" method="POST" onsubmit="user">
@@ -63,12 +39,12 @@
 
   <p id="genero">Seccion de Peliculas</p>
     <div id="videos">
-      <video name="batman" id="quinto" src="http://localhost:3000/video/Batman_ vs_Superman.mp4" controls></video>
+      <video id="quinto" src="http://localhost:3000/video/Batman_ vs_Superman.mp4" controls></video>
       <button type="button" onclick="Añadir('quinto')">Add</button>
     </div>
 
     <div id="videos">
-      <video name="x_men" id="sexto" src="http://localhost:3000/video/X-Men-Apocalypse.mp4" controls></video>
+      <video id="sexto" src="http://localhost:3000/video/X-Men-Apocalypse.mp4" controls></video>
       <button type="button" onclick="Añadir('sexto')">Add</button>
     </div>
 
@@ -76,7 +52,7 @@
   <div id="audio">
     <canvas id="canvasmusic"></canvas>
     <button type="button" onclick="Añadir('septimo')">Add</button>
-    <audio  id ="septimo" src="http://localhost:3000/audio/Dutty Love.mp3" hidden controls></audio>
+    <audio id ="septimo" src="http://localhost:3000/audio/NothingCanHoldUsDown.mp3" hidden controls></audio>
   </div>
   </body>
 <html>

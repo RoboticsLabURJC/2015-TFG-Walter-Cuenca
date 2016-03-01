@@ -43,7 +43,7 @@ app.post('/',urlencodedParser,function(req,res){
 	var compra = carrito.carrito;
 	for(var i=0;i < compra.length;i++){
 		var item  = compra[i].compra;
-		console.log(">> libro:"+item.libro+";Unidades:"+item.cantidad);
+		console.log(">> producto:"+item.producto+";Unidades:"+item.cantidad);
 	}
 	console.log("====");
 	res.clearCookie(user);
