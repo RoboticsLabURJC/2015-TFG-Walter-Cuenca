@@ -46,7 +46,7 @@ app.post('/',urlencodedParser,function(req,res){
 		console.log(">> producto:"+item.producto+";Unidades:"+item.cantidad);
 	}
 	console.log("====");
-	res.clearCookie(user);
+	res.clearCookie(user,JSON.stringify(carrito),{ expires: new Date(Date.now())});
 	console.log(">> Eliminamos en contenido de la cookie de "+user);
 	res.sendFile(__dirname + '/Index_Respuesta.html');
 });
