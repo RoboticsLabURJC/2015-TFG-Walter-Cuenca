@@ -41,7 +41,7 @@ app.get("/",function(req,res){
 app.post("/",urlencodedParser,function(req,res){
 	console.log("=== Recivido el contenido de ajax ===");
 	var palabra = req.body.palabra;
-	console.log('>>> palabra:'+palabra);
+	console.log('   >>> palabra:'+palabra);
 	palabra = palabra+"%";
 	connection.query('SELECT * from diccionario_tbl where palabra like ?',[palabra], function(err, rows, fields) {
   	if (!err){
@@ -50,7 +50,7 @@ app.post("/",urlencodedParser,function(req,res){
     	console.log("=== Enviamos palabras encontradas ===");
     	for(item in items_BD){
 
-    		console.log('>>> send:'+ rows[item].palabra);
+    		console.log('   >>> send:'+ rows[item].palabra);
     		list.push(rows[item].palabra);
     	}
     	var obj_list = {palabras:list};

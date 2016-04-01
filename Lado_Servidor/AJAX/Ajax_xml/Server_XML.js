@@ -42,7 +42,7 @@ app.post("/",urlencodedParser,function(req,res){
 	console.log("===Enviamos el resultado en formato XML===")
 	var xmlServer = creatXML(resultado);
 	console.log(xmlServer);
-	res.end(String(xmlServer));
+	res.send(String(xmlServer));
 });
 
 
