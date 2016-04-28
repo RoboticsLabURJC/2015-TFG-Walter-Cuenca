@@ -1,0 +1,21 @@
+#empezar,#terminar {
+	/*background-color:  #380000;*/
+	font-style: oblique;
+	border-radius: 8px;
+	margin: 2px;
+}
+
+#dificultad{
+	width: 80px;
+	font-style: oblique;
+	border-style: outset;
+	margin: 2px;
+}
+
+#name{
+	width: 55px;
+	font-style: oblique;
+	border-style: outset;
+	margin: 2px;
+}
+
