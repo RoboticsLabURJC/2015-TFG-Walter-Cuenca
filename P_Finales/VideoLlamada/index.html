@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Very simple WebRTC application with a Node.js signalling server</title>
+
+</head>
+<style type="text/css">
+
+
+video {        
+	background: white;        
+	border: 2px solid gray;      
+}      
+#mainDiv {        
+	position: relative;        
+	display: block;        
+	margin: 0 auto;        
+	width: 700px;
+	height: 600px;      
+} 
+
+#titulo{
+	position: relative;        
+	display: block;    
+	margin: 0px auto;
+	width: 600px;
+}
+ 
+#remoteVideo {        
+	width: 150px;        
+	height: 150px;        
+	position: absolute;        
+	top: 15px;
+	right: 15px;      
+}      
+#localVideo {        
+	width: 700px;        
+	height: 500px;
+	margin: 0 auto;   
+}
+#dataChannelSend{
+	width: 435px; 
+}
+
+p {
+	text-align: center;
+}
+
+#contentfile{
+	position: relative;  
+	display: block; 
+	margin: 0 auto;        
+	width: 310px;
+	height: 130px;
+	
+}
+
+#contentfile input {	
+	opacity: 0.6;
+}
+
+#list_file{
+	overflow: auto;
+	max-height:50px;
+}
+
+#img_receive{
+	border: solid;
+	position: relative;  
+	display: block; 
+	margin: 0 auto;        
+	width: 310px;
+	height: 80px;
+}
+
+#chat{
+	border: 2px solid gray;
+	overflow: auto;
+	max-height:165px;
+}
+
+a {
+    outline: 0;
+}
+
+
+
+</style>
+
+
+
+<body>
+
+<div id ="titulo">
+	<p>VideoConferencia con WebRTC</p>
+</div>
+
+
+
+<div id ="contentfile">
+	<input type="file" id="files" name="file" onchange="processFiles(this.files)" />
+	<div id="list_file">
+		
+	</div>
+	<div id ="img_receive">
+
+	</div>
+</div>
+
+<div id='mainDiv'>
+	<video id="localVideo" autoplay></video>
+	<input id="dataChannelSend" disabled placeholder="Canal de comunicacion cerrado..."></input> 
+	<button id="sendButton" disabled>Send</button>
+	<video id="remoteVideo" autoplay></video>
+	<div id="chat">	
+	</div>
+</div>
+
+
+<script src='/socket.io/socket.io.js'></script>
+<script src='js/lib/adapter.js'></script>
+<script src='js/completeNodeClientWithDataChannel.js'></script>
+
+</body>
+</html>
