@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Very simple WebRTC application with a Node.js signalling server</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+<script src='/socket.io/socket.io.js'></script>
+</head>
+<style type="text/css">
+
+video {        
+	background: white;        
+	border: 2px solid gray;      
+}      
+
+#title{
+	position: relative;        
+	display: block;    
+	margin: 0px auto;
+	width: 600px;
+}
+ 
+#localVideo {        
+	width: 700px;        
+	height: 500px;
+	margin: 0 auto; 
+	position: relative;  
+	display: block; 
+	margin: 0 auto;  
+}
+
+
+#btn{
+	position: relative;        
+	display: block;    
+	margin: 0px auto;
+}
+
+</style>
+
+<body>
+<div class='container'>
+	<div class="jumbotron">
+    <p  class="lead">App Service Streaming</p> 
+  </div>
+	<video id="localVideo" autoplay></video>
+	<br>
+	<button type="button" id="btn" class="btn btn-primary" onclick="Control_video()">Play/Pause</button>
+	<button type="button" class="btn btn-info" data-toggle="collapse" data-target="#demo">More Details</button>
+  <div id="demo" class="collapse">
+  </div>
+</div>
+<script src='js/lib/adapter.js'></script>
+<script src='getusermediaClient.js'></script>
+</body>
+</html>
