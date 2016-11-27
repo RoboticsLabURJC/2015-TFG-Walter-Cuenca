@@ -1,0 +1,178 @@
+% Appendix Template
+
+\chapter{Appendix Title Here} % Main appendix title
+
+\label{AppendixX} % Change X to a consecutive letter; for referencing this appendix elsewhere, use \ref{AppendixX}
+
+\section{Models}
+Se muestra las clases que se han creado al igual que los campos que lo forman, como mencionamos anteriormente esto corresponde con las tablas de nuestra base de datos.
+\subsection{Canciones}
+\begin{lstlisting}[
+frame=single,
+commentstyle=\color{CadetBlue},
+captionpos=b,
+caption=Incluir elementos multimedia remotos l.]
+class cancion(models.Model):
+ name=models.CharField(max_length=100,null=True)
+ song_file=models.FileField(upload_to = 'musica/', max_length=200,null=True)
+ def __unicode__(self):
+  return self.name
+\end{lstlisting}
+
+\subsection{Discos}
+\begin{lstlisting}[
+frame=single,
+commentstyle=\color{CadetBlue},
+captionpos=b,
+caption=Incluir elementos multimedia remotos l.]
+class disco(models.Model):
+	name = models.CharField(max_length=100,null=True)
+	genero = models.CharField(max_length=50,null=True)
+	linkImg = models.ImageField(upload_to="img_disco/",null=True)
+	name_cancion = models.ManyToManyField(cancion)
+	def __unicode__(self):
+		return self.name
+\end{lstlisting}
+
+\subsection{Videos}
+\begin{lstlisting}[
+frame=single,
+commentstyle=\color{CadetBlue},
+captionpos=b,
+caption=Incluir elementos multimedia remotos l.]
+class Videos(models.Model):
+ TYPE_FILE = (
+        ('iframe', 'iframe'),
+        ('video', 'video'),
+    )
+ name = models.CharField(max_length=100,null=True)
+ tipo=models.CharField(max_length=6, choices=TYPE_FILE,null=True)
+ linkVideo = models.FileField(upload_to = 'video/', max_length=200,null=True,blank=True)
+ linkweb = models.URLField(max_length=100,null=True,blank=True)
+ def __unicode__(self):
+		return self.name
+\end{lstlisting}
+
+\subsection{Imagenes}
+\begin{lstlisting}[
+frame=single,
+commentstyle=\color{CadetBlue},
+captionpos=b,
+caption=Incluir elementos multimedia remotos l.]
+class Imagenes(models.Model):
+ name = models.CharField(max_length=100,null=True)
+ linkImg = models.ImageField(upload_to="images/",null=True)
+ def __unicode__(self):
+	return self.name
+\end{lstlisting}
+
+\subsection{Artista}
+\begin{lstlisting}[
+frame=single,
+commentstyle=\color{CadetBlue},
+captionpos=b,
+caption=Incluir elementos multimedia remotos l.]
+class Artista(models.Model):
+ name = models.CharField(max_length=100,null=True)
+ linkImg = models.ImageField(upload_to="img_artist/",null=True)
+ genero = models.CharField(max_length=100,null=True)
+ web = models.URLField(max_length=100,null=True)
+ disco = models.ManyToManyField(disco)
+ videos = models.ManyToManyField(Videos) 
+ galeria = models.ManyToManyField(Imagenes)
+ def __unicode__(self):
+	return self.name
+\end{lstlisting}
+
+
+\subsection{Tickets}
+\begin{lstlisting}[
+frame=single,
+commentstyle=\color{CadetBlue},
+captionpos=b,
+caption=Incluir elementos multimedia remotos l.]
+class Tickets(models.Model):
+	TYPE_TICKET = (
+        ('Vip', 'VIP'),
+        ('General', 'Estandar'),
+    )
+	name=models.CharField(null=True,max_length=120)
+	precio=models.FloatField(null=True)
+	cantidad=models.IntegerField(null=True)
+	tipo=models.CharField(max_length=7, choices=TYPE_TICKET ,null=True)
+	info=models.CharField(null=True,max_length=120)
+	stock=models.BooleanField(default=True)
+\end{lstlisting}
+
+\subsection{Contacta}
+\begin{lstlisting}[
+frame=single,
+commentstyle=\color{CadetBlue},
+captionpos=b,
+caption=Incluir elementos multimedia remotos l.]
+class Contacta(models.Model):
+	TYPE_DEPARTAMENT = (
+        ('E', 'Evento'),
+        ('T', 'Ticket'),
+				('S', 'Tecnico'),
+    )
+	nombre=models.CharField(null=True,max_length=120)
+	email=models.EmailField(null=True)
+	area=models.CharField(max_length=1, choices=TYPE_DEPARTAMENT ,null=True)
+	telefono=models.CharField(null=True,max_length=120)
+	motivo=models.CharField(null=True,max_length=120)
+ 	time = models.DateTimeField(default=datetime.datetime.now)
+	texto=models.CharField(null=True,max_length=300)
+\end{lstlisting}
+
+\subsection{Evento}
+\begin{lstlisting}[
+frame=single,
+commentstyle=\color{CadetBlue},
+captionpos=b,
+caption=Incluir elementos multimedia remotos l.]
+class Evento(models.Model):
+	name = models.CharField(max_length=100,null=True)
+	cartel = models.ImageField(upload_to="images/",null=True)
+	artistas = models.ManyToManyField(Artista)
+	imagenes = models.ManyToManyField(Imagenes)
+	videos = models.ManyToManyField(Videos)
+	entradas =  models.ManyToManyField(Tickets)
+	longitud = models.FloatField(null=True)
+	latitud = models.FloatField(null=True)
+	direcccion = models.CharField(max_length=100,null=True)
+	fecha = models.DateTimeField(null=True)
+	def __unicode__(self):
+		return self.name
+\end{lstlisting}
+
+\subsection{Buy}
+\begin{lstlisting}[
+frame=single,
+commentstyle=\color{CadetBlue},
+captionpos=b,
+caption=Incluir elementos multimedia remotos l.]
+class Buy(models.Model):
+	typeProducto=models.CharField(max_length=100,null=True) 
+	nameProduct=models.ManyToManyField(Evento) 
+	typeTicket=models.CharField(max_length=100,null=True) 
+	cantidad=models.IntegerField(null=True)
+	total=models.IntegerField(null=True)
+	def __unicode__(self):
+		return self.typeProducto
+\end{lstlisting}
+
+\subsection{UserProfile}
+\begin{lstlisting}[
+frame=single,
+commentstyle=\color{CadetBlue},
+captionpos=b,
+caption=Incluir elementos multimedia remotos l.]
+class UserProfile(models.Model):
+	user = models.ForeignKey(User, unique=True)
+	imgPerfil = models.ImageField(upload_to="img_perfil/",null=True,
+    					default='images/Img_Default.jpg')
+	sexo = models.CharField(max_length=10,blank=True)
+	compra = models.ManyToManyField(Buy)
+\end{lstlisting}
+
