@@ -1,0 +1,152 @@
+% Chapter ComecocosWeb
+
+\chapter{Tienda Web} % Main chapter title
+\section{Enunciado}
+\subsection{Requisitos}
+\subsubsection*{Apariencia}
+\subsubsection*{Funcionalidad}
+\subsection{Tecnologias Necesarias}
+\begin{enumerate}
+\item Django.
+\item Tecnologias comunicacion cliente-servidor asincrono
+\item WebServices
+\item BBDD(Base de Datos)
+\end{enumerate}
+\subsection{Objetivos}
+La aplicacion tiene que cumplir los siguientes caracteristicas:
+\begin{enumerate}
+\item EL proyecto tiene que contener varias: url's,modelos y vistas.
+\item Gestion de usuarios : Login,Registro y Perfil individual
+\item Utilizacion de contenido multimedia
+\item Autocompletado.
+\item Implemencion de webService
+\item Carrito de la compra.
+\item Formularios : validaciones y generacion.
+\end{enumerate}
+\section{Tecnologias aplicadas}
+En este punto se explica los elementos que emplearemos de cada tecnologia en el desarrollo de esta practica.
+\subsection{BBDD}
+Para acceder/guardar informacion de los usuarios o del contenido de la web es necesario utilizar una BBDD com punto de almacenaiento de toda esta informacion.
+\\Por lo general, cuando se genera una aplicacion con Django la BBDD que segenera es Sqlite3 ,en nuestro caso vamos a implementar Mysql al ser una de la BBDD mas utilizadas en este momento.
+\\Por ello,necesitamos modificar el fichero 'setting' del proyeccto en el cual la informacion de  la BBDD que vamos a utilizar.
+\begin{lstlisting}[
+frame=single,
+commentstyle=\color{CadetBlue},
+captionpos=b,
+caption=Conexion base de datos.]
+ DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'prueba',
+        'USER':'root',
+        'PASSWORD':'*******',
+        'HOST':'',
+        'PORT':'',
+    }
+}
+\end{lstlisting}
+\subsection{Django}
+Es un framework que nos permite desarrollar una aplicacion web de una forma ordenada y secilla. Se basa en un MVC,es decir, modelo-vista-controlador que son las principales puntos en los que se basa el framework.
+\subsubsection{Models}
+Los modelos se representan como una clase Python ya que nos permite expresar de la misma forma multiples motores de bases de datos.
+\\Cada objeto se basa en el objeto 'models.Model' que contienen todas las herramientas necesarias para hacer que estos objetos interactuen con la base de datos de forma compacta.
+\begin{lstlisting}[
+frame=single,
+commentstyle=\color{CadetBlue},
+captionpos=b,
+caption=Ejemplo de un Modelo.]
+
+ from django.db import models
+ 
+ class Artista(models.Model):
+  name = models.CharField(max_length=100,null=True)
+  linkImg = models.ImageField(upload_to="img_artist/",null=True)
+  genero = models.CharField(max_length=100,null=True)
+  web = models.URLField(max_length=100,null=True)
+  disco = models.ManyToManyField(disco)
+  videos = models.ManyToManyField(Videos) 
+  galeria = models.ManyToManyField(Imagenes)
+  
+  def __unicode__(self):
+   return self.name
+\end{lstlisting}
+Para definir cada una de las propiedades utilizamos el objeto 'models.Model' de Django el cual informa al framework que se trata de un modelo y por tanto lo tiene que guardar en la base de datos.
+\\El siguiente paso se definen cada una de las propiedades como el name,linkImg,genero,...el cual define el tipo de campo:
+\begin{itemize}
+\item models.CharField : permite definir texto.
+\item models.UrlField : permite definir una url.
+\item models.ImageField : permite define una imagen.Es necesesario definir donde localizar el contenido pasando el atributo 'upload\_to'.
+\item models.DateTimeField : esto define fecha y hora.
+\item models.ForeignKey : permite vincularse a otro modelo estableciendo una relacion 1 a 1.
+\item models.ManyToManyField : permite vincularse a otro modelo con una relacion 1 a n.
+\end{itemize}
+Tras la creacion de los campos de cada clase se pueden definir funciones propias.En nuestro ejemplo utilizamos '\_\_unicode\_\_'  que devuelve el valor del campo nombre del objeto.
+\\Generalmente cada uno de  las clases se convierte en una tabla de la base de datos aunque si el metodo posee una relacion muchos-a-muchos se crea una tabla auxiliar entre los modelos.
+\\imagen de una tabla intermedia
+\\Para generar las tablas es necesario incluir los modelos en el fichero 'manage.py'.
+\\generacion de las tablas 
+\subsubsection{Vistas}
+Es uno de los punto mas importante ya que contiene toda la logica necesario para interactuar con la base de datos y devolver por lo general una pagina web con ayuda de pantillas que mas adelante se explicara su funcionamiento.
+\\Las vistas se encuentran del archivo 'models.py' del proyecto.
+\begin{lstlisting}[
+frame=single,
+commentstyle=\color{CadetBlue},
+captionpos=b,
+caption=Ejemplo de vistas.]
+ from django.http import HttpResponse 
+
+ def EventSelect(request,evento):
+  event = Evento.objects.filter(name__startswith=evento)
+  return render(request,'IndexEvent.html',{'event':event})
+    
+ def IndexView(request):
+  list_video=Videos.objects.all()
+  return render(request,'fullVideo.html',{'list_video':list_video})
+\end{lstlisting}
+Cada de las vistas se crean a traves de una funcion definida en pyton  en las que distinguimos dos tipos :
+\begin{itemize}
+\item Dinamicas : son aquellas que reciben un parametro adicional a traves de la url como por ejemplo la funcion 'def EventSelect(request,event)'.Esta funcion recibe el parametro event a traves de la url asociada a ella.
+\item Estaticas : son aquellas que reciben solo como parametro la peticion a traves del parametro 'request' como por ejemplo la funcion 'def IndexView(request)'.
+\end{itemize}
+Con la informacion que recibe se realiza una consulta con la BBDD obteniendo la informacion requerida.A traves del metodo 'render(request,'doc.html',info)' que recibe como parametros la peticion,el nombre del documento html(plantilla) y la informacion de la consulta se consigue mostrar la informacion al usuario como una pagina web.
+
+\subsubsection{Controlador}
+En este modelo el controlador tiene como funcion seleccionar la vista que corresponde a la peticion del usuario.
+\\Por ello al crear la aplicacion se genera el archivo 'urls.py' que contiene todas las direcciones disponibles.
+\begin{lstlisting}[
+frame=single,
+commentstyle=\color{CadetBlue},
+captionpos=b,
+caption=Ejemplo de url's.]
+
+ from django.conf.urls.defaults import patterns, url
+ from .views import ....
+
+ urlpatterns = patterns('',
+ 	url(r'^index/$',  views.MainPage),
+	url(r'^eventos/(?P<evento>\w{1,50})/$',  views.EventSelect),
+ )
+\end{lstlisting}
+Dentro de la vaiable 'urlpattern' se introducen las direcciones como una dupla con los siguientes parametros:
+\begin{itemize}
+\item path url : define el formato de la direccion.
+\item vista : define el nombre de la vista que se ejecuta cuando se realiza una consulta al path asociado.
+\end{itemize}
+En nuestra aplicacion se define dos tipos de path como se explican a continuacion :
+\begin{itemize}
+\item Dinamincos : son aquellos que permiten definir un parametro dentro del path que influye en respuesta.
+\\Del ejemplo anterio,el path '(r'\^ eventos/(?P<evento>\\w{1,50})/\$, ...)' define el nombre a traves de '?P<evento>' y el tipo y longitud a traves de la varible de 'w{1,50}',en nuestro caso es de tipo string con una longitud maxima de 50 caracteres.
+\item Estaticos : son aquellas que siempre obtinen las misma respusta al acceder a ellas ya que no reciben ningun parametro.Del ejemplo anterior el path '(r'\^index/\$',...)' es de este tipo.
+\end{itemize}
+\subsubsection{Sistema Plantillas}
+Mencionamos en la definicion de vistas que estas necesitaban de Plantillas donde se volvaba la informacion obtenida de las consultas.Las plantilla no son mas que archivos .html enriquesidos con el lenguaje de plantillas.
+\\Este lenguaje permite distribuir la informacion obtenida por la vista dentro del docuemento.
+
+\subsection{Tecnologias comunicacion cliente-servidor}
+Para establecer comunicacion entre el cliente-elservidor existen tecnologias quer permite obtener formas uer permiten enviar informacion al servidor a traves de las
+\subsubsection*{Ajax}
+\subsubsection*{Cookie}
+\subsubsection*{Formularios}
+\subsection{WebServices}
+\section{Desarrollo}
+\section{Demostración}
