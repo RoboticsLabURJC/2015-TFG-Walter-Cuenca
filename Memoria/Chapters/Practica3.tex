@@ -139,14 +139,91 @@ En nuestra aplicacion se define dos tipos de path como se explican a continuacio
 \item Estaticos : son aquellas que siempre obtinen las misma respusta al acceder a ellas ya que no reciben ningun parametro.Del ejemplo anterior el path '(r'\^index/\$',...)' es de este tipo.
 \end{itemize}
 \subsubsection{Sistema Plantillas}
-Mencionamos en la definicion de vistas que estas necesitaban de Plantillas donde se volvaba la informacion obtenida de las consultas.Las plantilla no son mas que archivos .html enriquesidos con el lenguaje de plantillas.
-\\Este lenguaje permite distribuir la informacion obtenida por la vista dentro del docuemento.
-
+Una plantilla define rellenos y permite utilizar etiquetas de plantilla que indican como se debe de mostrar el documento.Por lo general, se utiliza para generar documentos HTML aunque se puede generar cualquier tipo de documento basado en texto.
+\begin{lstlisting}[
+frame=single,
+commentstyle=\color{CadetBlue},
+captionpos=b,
+caption=Ejemplo plantilla .]
+ <!DOCTYPE html>
+ <html>
+  <head>
+   <title>Hora actual</title>
+  </head>
+  <body>
+   <h1>Bienvenidos</h1>
+    <p>Dia y hora actual: {{ fechahora\_actual }}</p>
+    {% for cantante in evento.artistas.all %}
+     <div>
+      <a href="pulpitrock.jpg" class="thumbnail">{{cantante.name}}</p></a>
+     </div>
+    {% endfor %}
+    {% block info %}
+    {% endblock %}
+  </body>    
+</html>
+ {% extends 'IndexApp.html' %}
+	
+\end{lstlisting}
+La plantilla del ejemplo muestra las caracteristicas de las que se pueden llevar:
+\begin{itemize}
+\item El contenido encerrado entre \{\{ \}\} es una variable obtenida a partir de la vista correspondiente
+\item El contenido encerrado entre \{\% \%\} hace referencia a las etiquetas de plantilla permitiendo dotar a las plantillas de algun mecanismo simple de programacion.
+\end{itemize}
+Se puede definir varias tipos de etiquetas y filtros disponibles en la creacion de las plantillas.
+\\Definir por cada enlace un documeto HTML seria algo muy pesado y segun la complejidad del proyecto esto llega ser inviable por ello en Django existe la definicion de herencia.
+\\Esta propiedad permite definir una plantilla base con secciones de codigos que marcan las diferencias entre las distintas paginas a traves de las siguienes etiquetas \{\% block seccion1 \%\} y  \{\% endblock \%\}.Las paginas hijas heredan la estructura del padre a a traves de  \{\% extends 'IndexApp.html' \%\} y pasamos a sobreescribir cada una de las secciones anteriores por el contenido correspondiente.
 \subsection{Tecnologias comunicacion cliente-servidor}
-Para establecer comunicacion entre el cliente-elservidor existen tecnologias quer permite obtener formas uer permiten enviar informacion al servidor a traves de las
+Para establecer comunicacion entre el cliente-el servidor existen tecnologias quer permiten que el usuario interactue con el servidor ya sea solicitando,validando o guardando algun tipo de informacion. \\En nuestra practica vamos a utilizar las siguientes tres tecnologias.
 \subsubsection*{Ajax}
+Permite realizar peticiones asincronas al servidor,es decir,son peticiones que se encargan de realizar una consulta al servidor y el resultado se presenta en una seccion de la pagina dando lugar a no cargar la pagina entera para poder mostrar el nuevo contenido.
+\\Existen multiples formas de integra Ajax ya se utilizando el objeto XHTML.... a traves de JavaScript o empleando Jquery que disponde de metodo \$.ajax(......).Por facilida se emplea Jquery ya que nos permite realizar la peticion y presentar su resultado de una forma mas sencilla.
 \subsubsection*{Cookie}
+Para guardar informacion de estado del usuario durante su instancia en la web es necesario emplear Cookies debido a que el protocolo Http  no es capas de guardar este tipo de informacion.
+\\En nuestra aplicacion es necesario guardar la compra de los elementos de la web 
 \subsubsection*{Formularios}
+Tienen como funcion validar/guardar informacion que los usuarios.
+\\Disponemos de dos tipos principales Get y Post.El metodo Get se utiliza para solicitar acceso a un terminado punto de la aplicacion por lo que el usuario recibe un formulario vacio , mientras que el metodo Post se utiliza cuando el usuario ha rellenado un formulario y es envia al servidor el cual obtendra cada uno  del los campos para ser validados y permitan al usuario el acceso.
+\\En la aplicacion se utiliza esto para desarrollar los siguientes puntos:
+\begin{enumerate}
+\item Register,Login de usuarios.
+\item Modificacion perfil de cada usuario.
+\item Contacta para la peticion de informacion sobre la web
+\end{enumerate}
 \subsection{WebServices}
+Son servidores externos que contienen informacion guardada en su BBDD.Generalemente, se realizan peticion a una direccion donde el cuerpo del mensaje tiene que tener la estructura predefinida por el WebServices.
+\\El formato de los datos pueden ser Json o XML segun las caracteristicas del Servidor Web. 
 \section{Desarrollo}
+\subsection{Back-End}
+Se Establecen las tablas y sus campos como paso principal de nuestra aplicacion.En nuestra aplicacion se define los siguientes modelos:
+\begin{enumerate}
+\item Canciones
+\item Discos
+\item Videos
+\item Eventos
+\end{enumerate}
+A continuacion,se incluye estos modelos dentro del archivo 'manage.py' para ser visible en el adminitrador de Django.
+\\imagen de esto
+\\Tras esto necesitamos introducir elementos en cada uno de las tablas generadad.Podemos introducir los elementos a traves del interfz de Mysql aunque Django permite realizar esto a traves deñ interfaz del Administrador que es mucho mas sencillo e intuitivo.
+\\imagen de esto
+El siguiente paso es generar el conjunto de rutas de las que dispone la aplicacion permitiendo al usuario acceder al contenido correspondiente.
+\\imagen urls
+\\El ultimo paso es generar las funciones que interactuan con la BBDD generan el contenido que el usuario pida con cada peticion, a continuacion pasamos a explicar cada una de estas funciones individualmente.
+\subsubsection*{Index Page}
+
+\subsubsection*{Select Festival}
+
+\subsubsection*{Select Cantante}
+
+\subsubsection*{Imagenes}
+
+\subsubsection*{Videos}
+
+\subsubsection*{Gestion de usuarios}
+
+\subsubsection*{Compra elementos}
+
+
+que el usuario tendra acceso durante sue stancia en la web.
+\subsection{Frond-End}
 \section{Demostración}
