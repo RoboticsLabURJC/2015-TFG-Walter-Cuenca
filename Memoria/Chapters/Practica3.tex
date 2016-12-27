@@ -1,4 +1,4 @@
-% Chapter ComecocosWeb
+% Chapter TiendaWEB
 
 \chapter{Tienda Web} % Main chapter title
 \section{Enunciado}
@@ -163,7 +163,6 @@ caption=Ejemplo plantilla .]
   </body>    
 </html>
  {% extends 'IndexApp.html' %}
-	
 \end{lstlisting}
 La plantilla del ejemplo muestra las caracteristicas de las que se pueden llevar:
 \begin{itemize}
@@ -194,36 +193,235 @@ Tienen como funcion validar/guardar informacion que los usuarios.
 Son servidores externos que contienen informacion guardada en su BBDD.Generalemente, se realizan peticion a una direccion donde el cuerpo del mensaje tiene que tener la estructura predefinida por el WebServices.
 \\El formato de los datos pueden ser Json o XML segun las caracteristicas del Servidor Web. 
 \section{Desarrollo}
+EL desarrollo de una Web consta de tres secciones en la que cada una se encarga de aportar funcionalidad a la web.A continuacion se pasa explicar el enfoque dado de cada parte en nuestra practica.
 \subsection{Back-End}
-Se Establecen las tablas y sus campos como paso principal de nuestra aplicacion.En nuestra aplicacion se define los siguientes modelos:
-\begin{enumerate}
-\item Canciones
-\item Discos
-\item Videos
-\item Eventos
-\end{enumerate}
-A continuacion,se incluye estos modelos dentro del archivo 'manage.py' para ser visible en el adminitrador de Django.
-\\imagen de esto
-\\Tras esto necesitamos introducir elementos en cada uno de las tablas generadad.Podemos introducir los elementos a traves del interfz de Mysql aunque Django permite realizar esto a traves deñ interfaz del Administrador que es mucho mas sencillo e intuitivo.
-\\imagen de esto
+Se encarga de la creacion de tablas y campos de la BBDD.
+Ademas,desarrolla mecanismos que permitan realizar consultas contra la BBDD o enviar cierta informacion al usuario.
+\subsubsection*{Modelos}
+Definimos los modelos necesarios para tratar el contenido de la aplicacion.A continuacion,se muestra los campos y la relacion existente entre los modelos.
+\\IMAGEN DE LA RELACION DE BASES DE DATOS
+\\Tras la creacion de los modelos se incluyen dentro del archivo 'manage.py' para permitir que sean visibles en el adminitrador de Django.
+\\IMAGEN DEL ADMIN DE DJANGO
+\\El ultimo paso es introducir informacion en cada modelo a traves del interfaz  Admin de Django el cual es intuitivo e independiente de la BBDD que utilizamos. 
+\\IMAGEN DE LA INTRODUCCION 
+\subsubsection*{URL's}
 El siguiente paso es generar el conjunto de rutas de las que dispone la aplicacion permitiendo al usuario acceder al contenido correspondiente.
 \\imagen urls
-\\El ultimo paso es generar las funciones que interactuan con la BBDD generan el contenido que el usuario pida con cada peticion, a continuacion pasamos a explicar cada una de estas funciones individualmente.
-\subsubsection*{Index Page}
-
+\subsubsection*{Vistas}
+Ahora es necesario crear las vistas encargadas de obtener/introducir informacion a la BBDD.A continuacion se explica la funcionde las distintas funciones que se han creado.
+\subsubsection*{\textit{Index Page}}
+Al acceder a la pagina principal el servidor una peticion que sera tratada por la vista 'Index Page'.
+\\Esta vista obtiene la informacion de los eventos,artistas disponibles en la aplicacion y asi el usuario lo pueda visualizar.
+\begin{lstlisting}[
+frame=single,
+commentstyle=\color{CadetBlue},
+captionpos=b,
+caption=Ejemplo plantilla .]
+def IndeApp(request):
+ return render 
+\end{lstlisting}
 \subsubsection*{Select Festival}
-
+Al seleccionar un festival se envia la peticion y el nombre del festival al servidor el cual ejecutara la vista 'SelecT\_Event'.
+\\La vista busca dentro de la tabla 'Eventos' una coincidencia con el nombre del festival de la peticion, esta informacion se envia al cliente para que su visualizacion.
+\begin{lstlisting}[
+frame=single,
+commentstyle=\color{CadetBlue},
+captionpos=b,
+caption=Ejemplo plantilla .]
+def IndeApp(request):
+ return render 
+\end{lstlisting}
 \subsubsection*{Select Cantante}
-
+La funcion de esta esta vista es similar a la explicada en anteriormente aunque la consulta se realiza sobre la tabla 'Cantantes' de la BBDD.
+\begin{lstlisting}[
+frame=single,
+commentstyle=\color{CadetBlue},
+captionpos=b,
+caption=Ejemplo plantilla .]
+def IndeApp(request):
+ return render 
+\end{lstlisting}
 \subsubsection*{Imagenes}
-
+Al seleccionar visualizar la galeria de la web el servidor una peticion que sera trata por la vista 'IndexImage'.
+\\La vista consulta la tabla 'Imagenes' cuya informacion sera devuelta al cliente.
+\begin{lstlisting}[
+frame=single,
+commentstyle=\color{CadetBlue},
+captionpos=b,
+caption=Ejemplo plantilla .]
+def IndeApp(request):
+ return render 
+\end{lstlisting}
 \subsubsection*{Videos}
-
+La funcion de esta vista es similar a la explicada en anteriormente aunque la consulta se realiza sobre la tabla 'Videos' de la BBDD.
+\begin{lstlisting}[
+frame=single,
+commentstyle=\color{CadetBlue},
+captionpos=b,
+caption=Ejemplo plantilla .]
+def IndeApp(request):
+ return render 
+\end{lstlisting}
+\subsubsection*{Buscador}
+Al realizar una peticion a traves de la barra de busqueda el servidor recibe una perticion que sera tratada por la vista 'Search'.Esta funcion busca en las distintas tablas (artistas,festivales) el elemento solicitado en caso en no encontrarlo se envia la cadena 'No resultado' en caso contrario enviamos lla informacion obtenida.
+\begin{lstlisting}[
+frame=single,
+commentstyle=\color{CadetBlue},
+captionpos=b,
+caption=Ejemplo plantilla .]
+def IndeApp(request):
+ return render 
+\end{lstlisting}
 \subsubsection*{Gestion de usuarios}
-
+La gestion de usuarios esta enfocado en permitir a los usuarios formar parte de la web o permitir acceder a la informacion del usuario.
+\\Por ello,cuando un usuario quiere formar parte de la web por primera vez envia una peticion al servidor que sera tratada por la vista 'IndexRegister'.La vista evalua el metodo de la peticion que puede ser:
+\begin{itemize}
+\item GET :peticion de contenido.
+\item POST :validar/guardar informacion enviada del cliente-servidor.
+\end{itemize}
+En nuestra aplicacion al tener un metodo 'GET' enviamos un formulario para que el cliente lo rellene con los datos solicitados.
+\\En caso de ser 'POST' se genera una instancia del formulario 'Register()'con la informacion que viaja en el cuerpo de la peticion. Tras esto se valida el contenido del fomulario a traves del metodo 'is\_vaid()' y en caso de pasar la validacion se obtiene la informacion del formulario con el metodo 'cleaned\_data['nameVar']' y creamos un nuevo elemento en la tabla User con la informacion anterior.
+\\Finalmente,se crea una nueva entrada en la table 'UserProfile' al que se le asocia la entrada de la tabla 'User' creada y el sexo del usuario.
+\begin{lstlisting}[
+frame=single,
+commentstyle=\color{CadetBlue},
+captionpos=b,
+caption=Vista registro de usuarios.]
+ def indexRegister(request):
+  if request.method == 'POST':
+   formRegister = Register(request.POST)
+    if formRegister.is_valid():
+     user = formRegister.cleaned_data['nick']
+     nombre = formRegister.cleaned_data['nombre']
+     apellido = formRegister.cleaned_data['apellido']
+     password = formRegister.cleaned_data['pasword']
+     email = formRegister.cleaned_data['email']
+     sex = formRegister.cleaned_data['sexo']
+     u=User.objects.create_user(
+      username=user,email=email,password=password,
+      first_name=nombre,last_name=apellido)
+     #guardamos el usuario y pasamos a crear el perfil
+     perfil = UserProfile(user=u,sexo=sex)
+     perfil.save();
+     return HttpResponseRedirect('/recursos/login')
+   else:
+     error = 'La informacion no es valida'
+  return render(request,'new_user.html',{'form':Register()})
+\end{lstlisting}
+Por otra parte los usuarios que quieran acceder a la web a traves del login envian una peticion al servidor que sera tratada por la vista 'indexLogin'.Al igual que con la vista anterior evaluamos el metodo de la peticion.
+\\En caso de ser 'GET' se envia un formulario de tipo 'FormLogin' con los campos necesarios para iniciar sesion. Mientras que al ser 'POST' la validacion del formulario  y la obtencion de informacion se realiza de la misma forma que en el caso anterior.
+\\Se realiza la autenticacion del usuario mediante el metodo 'autenticate()' de Django tras esto pasamos a hacer login en la aplicacion a traves del metodo 'login()' de Django.Al final se añade una  cookie en la respuesta con el nombre del usuario con el objetivo de emplearla para mantener informacion del usuario.
+\begin{lstlisting}[
+frame=single,
+commentstyle=\color{CadetBlue},
+captionpos=b,
+caption=Vista login usuarios.]
+def indexLogin(request):
+ if request.method == 'POST':
+  FormLogins = FormLogin(request.POST)
+   if FormLogins.is_valid():
+    user = FormLogins.cleaned_data['nombre']
+    password = FormLogins.cleaned_data['pasword']
+    usuario = authenticate(username=user,password=password) 
+    if usuario is not None and usuario.is_active:
+     login(request,usuario)
+     if 'name' in request.COOKIES:
+      if request.COOKIES['name'] == user:
+       cookies = HttpResponseRedirect('/recursos/')
+       expires = datetime.datetime.strftime(datetime.datetime.utcnow(), 
+          "%a, %d-%b-%Y %H:%M:%S GMT")
+       cookies.set_cookie(user,'')
+       return cookies
+      else:
+       cookies = HttpResponseRedirect('/recursos/')
+       cookies.set_cookie(user,'')
+       print request.COOKIES
+       return cookies
+   else:
+     mensaje = "Usuario y/o password incorrecto"
+ FormLogins = FormLogin()
+ return render(request,'login.html',{'form':FormLogins})
+\end{lstlisting}
 \subsubsection*{Compra elementos}
-
-
-que el usuario tendra acceso durante sue stancia en la web.
+Al realizar una peticion a traves del carrito de la compra  servidor recibe una perticion que es tratada por la vista 'IndexBuy'.
+\\La vista obtiene la informacion de la cookie asociada al usuario que realiza la peticion.Para cada elemento se realiza una instancia del modelo 'Buy()' en el que se guarda el contenido de la compra y asociamos esta compra al perfil del usuario.
+\\Finalmente,se actualiza el tiempo de caducidad de la cookie del usuario antes de redireccionar al inicio de la web tras la finalizar al compra.
+\\
+\begin{lstlisting}[
+frame=single,
+commentstyle=\color{CadetBlue},
+captionpos=b,
+caption=Vista compra.]
+def IndexBuy(request):
+ usuario = str(request.user)
+ valueCookie = json.loads(request.COOKIES[usuario])
+ idUser = User.objects.get(username=usuario)
+ inst_usuario = UserProfile.objects.get(user=idUser.id)
+ for elemento in valueCookie:
+  #creamos la instncia de la compra
+  newCompra = Buy()
+  newCompra.typeProducto='evento'
+  newCompra.typeTicket=elemento['tipo']
+  newCompra.cantidad=elemento['cantidad']
+  newCompra.total=elemento['total']
+  producto = Evento.objects.get(name=elemento['nproduct'])
+  newCompra.save()
+  newCompra.nameProduct.add(producto)
+  inst_usuario.compra.add(newCompra)
+ cookie = HttpResponseRedirect("/recursos/")
+ expires = datetime.datetime.strftime(datetime.datetime.utcnow()
+  + datetime.timedelta(seconds=0), "%a, %d-%b-%Y %H:%M:%S GMT")
+ cookie.set_cookie(usuario,
+  request.COOKIES[usuario], expires = expires)
+ return cookie
+\end{lstlisting}  
 \subsection{Frond-End}
+Se encarga del diseño que la pagina tiene que tener y dotar a la web de cierta funcionalidad para que el usuario pueda interactuar con la web.Para abordar de una forma sencilla se dividi en dos secciones, una tratara del diseño  de la web y el otro de la funcionalidad que posee. 
+\subsubsection*{Buscador}
+Se crea la funcion sendAjax() la cual se ejecuta cuando el usuario realice una busqueda a traves del metodo onchange de JS. Esta funcion recoge los caracteres que el usuario ha introducido validando que tengan una longitud mayor a dos caracteres.
+\\Tras esto se crea un peticion Ajax a traves de Jquery.Para ello establecemos el metodo, la url, los datos de la peticion y dos funciones la primera se ejecuta cuando la peticion se realizando correctamente y el otro cuando existe un fallo
+\subsubsection*{Lista Reproduccion}
+Al selecciona un cantante se obtiene informacion referente a el,dentro de esta informacion encontramos los discos.A cada uno de los los discos le vinculamos.
+\begin{lstlisting}[
+frame=single,
+commentstyle=\color{CadetBlue},
+captionpos=b,
+caption=Incluir elementos multimedia remotos l.]
+ function loadcancion(file){
+  var path='/media/'+file;
+  $('#repro').attr('src',path);
+  var tag = document.getElementById('repro');
+  tag.oncanplaythrough  = function() {
+    tag.play();
+    $('#durationRepro').text(tag.duration);
+    $('#stateRepro').text('reproduciendo');
+    tag.onended = function(){
+     $('#stateRepro').text('');
+     };
+    };
+ }
+\end{lstlisting}
+\subsubsection*{Reproductor Video}
+Al tener dos tipos de elementos de audio es necesario presentra correspondiente cada uno. El usuario a traves selecciona un video de la lista que acciona la funcion play\_repro() con la informacion del archivo.Si el archvio seleccionado es un archivo de video se presenta a traves de la etiqueta video de HTML y ocultamos la etiqueta iframe existente, en caso contrario se presenta el elemento con la etiqueta iframe y ocultamos la etiqueta video.
+\\Es necesario utilizar dos etiquetas HTML diferentes es porque el los archivos iframe son urls de videos que se encuentra en otra pagina web mientras que los archivos de video son propios de la web.
+\begin{lstlisting}[
+frame=single,
+commentstyle=\color{CadetBlue},
+captionpos=b,
+caption=Incluir elementos multimedia remotos l.]
+ function play_repro(file,tipo){
+  if(tipo == 'iframe'){
+   $('iframe').attr("src",file);
+   $("video").hide();
+   $("iframe").show();
+  }else{
+  var path ='/media/'+file;
+  $('video').attr("src",path);
+  $("iframe").hide();
+  $("video").show();
+  }
+ }
+\end{lstlisting}
+\subsubsection*{Galeria Imagenes}
+\subsubsection*{Carrito de la compra}
 \section{Demostración}
