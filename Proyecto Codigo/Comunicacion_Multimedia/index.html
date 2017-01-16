@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Chat Multi-usuario con WebRTC</title>
+	<meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+	<script src='/socket.io/socket.io.js'></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+	<style type="text/css">
+
+	video {
+  
+  	height: 500px;
+  }
+
+  #texto {
+  	border: solid;
+  	border-color: #B8B8B8;
+  	height: 480px;
+  	width: 90%;
+  }
+
+  #list_remote video{
+  	width: 180px;
+  	height: 150px;
+  }
+
+  #x{
+		width: 90%;
+  }
+
+  h1{
+  	text-align: center;
+  }
+
+  h3 {
+  	text-align: center;
+  }
+
+  body{
+  	background-color: #D8D8D8 ;
+  }
+
+  .container{
+  	width: 70%;
+  }
+
+	</style>
+</head>
+<body>
+<div class="container">
+	<nav class="navbar navbar-inverse">
+		<div class="container-fluid">
+		  <div class="navbar-header">
+		    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+		      <span class="icon-bar"></span>
+		      <span class="icon-bar"></span>
+		      <span class="icon-bar"></span>                        
+		    </button>
+		    <a class="navbar-brand" href="#">Chat P2P</a> 
+		  </div>
+		  <a class="navbar-brand" onclick="SelecItems(this)" id="itemVideo"><input type="radio" name="audio">Audio</a>
+		  <a class="navbar-brand" onclick="SelecItems(this)" id="itemAudio"><input type="radio" name="video">Video</a>
+		  <div class="collapse navbar-collapse" id="myNavbar">
+		    <ul class="nav navbar-nav navbar-right">
+		    	<li><a><span class="glyphicon glyphicon-user" id='name_user'></span></a></li>
+		    	<li><a onclick="Popup()">Create Room</a></li>
+		      <li class="dropdown">
+		        <a class="dropdown-toggle" data-toggle="dropdown" href="#">List_File<span class="caret"></span></a>
+		        <ul class="dropdown-menu" id='listFile'>
+		        </ul>
+		      </li>
+		      <li class="dropdown">
+		        <a class="dropdown-toggle" data-toggle="dropdown" >List_Room<span class="caret"></span></a>
+		        <ul class="dropdown-menu" id='listRoom'>
+		        </ul>
+		      </li>
+		    </ul>
+		  </div>
+		</div>
+	</nav>
+
+  <div class="row">
+   <div class="media">
+   		<input type="file" id="input" onchange="processFiles(this.files)" disabled="false">
+   		<div class="media-left">
+   			<video id="localvideo" autoplay></video>
+   		</div>
+   <div class="media-body">
+      <h4 class="media-heading">Chat Room</h4>
+      <div data-spy="scroll" id="texto"></div>
+    	<input id="x" type="text" name="texto" disabled placeholder="Comunicacion Cerrada" onchange="send_data(this)">
+    </div> 	
+ 	</div>
+
+    <div class="col-sm-12" id='list_remote'>
+      <h3>Usuarios Conectados</h3> 
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+	//js para la creacion de tag videos de forma automatica
+	var list_user=[];
+	var list_send=[];
+	var streaming;
+	var localvideo = document.querySelector('#localvideo');
+	var text = document.querySelector('#x');
+	var id_newUser;
+	var my_id;
+  var pc_config = {'iceServers': [{'url': 'stun:stun.l.google.com:19302'}]};
+  var receiveChannel;
+  var x;
+	var items = {
+		audio:false,
+		video:false
+	}
+
+	/*** variables para el envio de ficheros ***/
+	var size_data = 150;
+	var data_encript;
+	var inicio = 0;
+	var fin = 0;
+	var blob = ",";
+	var type;
+	var name_fich;
+
+
+	var webrtcDetectedBrowser = 'chrome'
+	var nameRoom;
+	var name = prompt('Username:');
+	//http://192.168.43.136:8181
+	
+	/* seleccionamos los codec necesarios segun el navegador que se utilice  */
+	navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia 
+													|| navigator.mozGetUserMedia || navigator.msGetUserMedia;
+	var RTCSessionDescription = window.RTCSessionDescription || window.mozRTCSessionDescription;
+	var RTCPeerConnection = window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
+	
+
+
+	function SelecItems(elemento) {
+		var typeElement = $(elemento).text();
+		console.log('item Media');
+		console.log(typeElement);
+		if(typeElement == 'Audio'){
+			items.audio = true;
+		}else{
+			items.video = true;
+		}
+	}
+
+	/* evaluamos la forma de producir el elemento */
+	if (navigator.mozGetUserMedia) {
+  	webrtcDetectedBrowser = "firefox";
+  }
+
+  /* comprobamos que el nombre no sea nulo */
+	if(name != ''){
+		$("#name_user").html(':'+name);
+	}
+	
+
+	function Popup(){
+		nameRoom = prompt('RoomName:');
+		attachmentElements();
+	}
+
+	/*
+		Atamos nuestros elementos de video y audio 
+	*/
+	function attachmentElements() {
+	
+		User_ItemMedia();
+	}
+	
+	
+	var socket = io.connect("http://localhost:8181");
+	//var socket = io.connect("192.168.0.162:8181");
+
+	console.log('Conexion Websocket en: <127.0.0.1><8181>');
+
+	/* pedimos infromacion sobre las salas que estan disponibles */
+	socket.emit('infoRoom');
+
+	console.log('Envio mensaje infoRoom con Websocket');
+
+	/* añadimos las salas que estan disponibles  */
+	socket.on('ReplayInfoRoom',function(listRoom){
+		console.log('Recibimos mensaje ReplayInfoRoom a traves de Websocket');
+		console.log(listRoom)
+		for(var i = 0; i < listRoom.length; i++) {
+			var room = listRoom[i];
+			/* Añadimos en nuestro div los usuarios para crear una coneccion  */
+			if(room.state != 'block'){
+				$('#listRoom').append('<li><a id='+room.name+'>'+room.name+'</a></li>');
+				$('#'+room.name).click(function(){
+					nameRoom = $(this).text();
+					attachmentElements();
+				});
+			}else{
+				$('#listRoom').append('<li><a id='+room.name+'>'+room.name+':lleno'+'</a></li>');
+			}
+		}	
+	});
+
+
+	/*
+	Mensaje que se reciben todos los usuarios para conectar el
+	audio y el video.
+	*/
+	socket.on('CreateStream',function(id){
+		console.log('Recibimos mensaje CreateStream a traves de Websocket');
+		console.log('**idCliente:'+id)
+		my_id = id;
+	});
+
+
+	/*
+	Mensaje que reciben los usuarios que estaban ya en el chat
+	antes de este nuevo usuario.
+	*/
+	socket.on('New_Joined',function(id){
+		//recibimos la coneccion de un nuevo usuario
+		console.log('Recibimos mensaje New_Joined a traves de Websocket');
+		id_newUser = id;
+		console.log('**new_user:'+id_newUser);
+		create_connection(id_newUser);
+	});
+
+	//tratamiento  de los mensajes 
+	socket.on('message',function(message){
+		console.log('recibimos:');
+		console.log(message);
+		//evaluo que tipo de mensaje nos llega
+		if(message.message.type == 'offer'){
+			//tenemos que constestar a la oferta
+			var pc = new RTCPeerConnection(pc_config,{});
+			console.log(streaming);
+			id_newUser= message.id_origen;
+			//añado a la respuesta mi streaming
+			pc.addStream(streaming);
+			//añadimos a nuestra session la descripcion  que me ha llegado
+			pc.setRemoteDescription(new RTCSessionDescription(message.message));
+			//enviamos los candidatos
+			console.log('RTCPeerConnection in answer')
+			console.log(pc);
+
+			pc.onicecandidate = SendICecandidate;
+
+			//creamos la respuesta a la oferta
+			pc.createAnswer(function(sessionDescription){
+				console.log('Descripcion de sesion answer.');
+				console.log(sessionDescription);
+				console.log(sessionDescription.sdp);
+				pc.setLocalDescription(sessionDescription);
+				var msg = create_msg(my_id,message.id_origen,sessionDescription);
+				console.log('Envio mensaje message con Websocket');
+				console.log(msg);
+				socket.emit('message',msg);
+				},function(err){
+					console.log(err);
+				},{}
+			);
+
+			pc.onaddstream = function(event){
+				var num_user = 'user_'+ list_user.length;
+				new_remote(num_user);
+				var video = document.querySelector('#'+num_user);
+
+				if(webrtcDetectedBrowser == 'firefox'){
+					video.mozSrcObject = event.stream;
+				}else{
+					video.srcObject = event.stream;
+				}
+				video.play();
+		    list_user.push({id:message.id_origen,peer:pc,data:receiveChannel});
+	  	}
+
+	  	pc.ondatachannel = function(event){
+		  	list_send.push(event.channel);
+				var receiveChannel = event.channel;
+				console.log('Creamos la instancia de recepcion del canal de datos.')
+				console.log(receiveChannel);
+			  receiveChannel.onmessage = ChannelReceive;
+			  receiveChannel.onopen = ChannelOpen;
+			  receiveChannel.onclose = ChannelClose;
+			}
+
+
+		}else if(message.message.type == 'answer'){
+			//recibimos un answer
+			console.log('Recibimos respuesta añadimos descripcion');
+			addAnswer(message.id_origen,message.message);
+			
+		}else if(message.message.type == 'iceCandidate'){
+			//tenemos aue guardar el iceCandidate que recibimos segun el usuario
+			console.log('recibimos un icecandidate');
+			console.log('Recibimos una ice_candidate:');
+ 			console.log(message); 
+			var candidate = new RTCIceCandidate(
+				{sdpMLineIndex:message.message.label,
+	      candidate:message.message.candidate
+	    	}
+	    	);
+			addIceCandidate(message.id_origen,candidate);
+		}
+
+	});
+
+	//siempre que  un nuevo usuario se conecte al grupo existente
+	function create_connection(id){
+		console.log('Iniciamos el proceso de señalizacion.');
+		var pc = new RTCPeerConnection(pc_config,{});
+		var num_user = 'user_'+ list_user.length;
+		new_remote(num_user);
+		//añadimos nuestro streaming para la comunicacion
+		pc.addStream(streaming);
+		//tenemos que crer un canal de comunicacion de datos
+		var sendChannel = pc.createDataChannel("sendDataChannel",{reliable: true});
+
+		console.log('RTCPeerConnection in Offer.')
+		console.log(pc);	
+
+		console.log('Creamos el canal de datos.')
+		console.log(sendChannel);
+		
+		list_send.push(sendChannel);
+    //le asignamos los siguientes eventos al canal
+    sendChannel.onopen = ChannelOpen;
+    sendChannel.onclose = ChannelClose;
+    sendChannel.onmessage = ChannelReceive;
+
+		pc.createOffer(function(sessionDescription){
+			//guardamos esto en nuestra session
+			console.log('Descripcion de sesion oferta.');
+			console.log(sessionDescription);
+			console.log(sessionDescription.sdp);
+			pc.setLocalDescription(sessionDescription);
+			//enviamos nuestra descripcion al nuevo usuario
+			var message = create_msg(my_id,id_newUser,sessionDescription);
+			socket.emit('message',message);
+			console.log('Envio mensaje message con Websocket');
+			console.log(message);
+			},function(err){
+				console.log(err);
+			},{}
+		);
+
+		pc.onaddstream = function(event){
+			var video = document.querySelector('#'+num_user);
+			if(webrtcDetectedBrowser == 'firefox'){
+					video.mozSrcObject = event.stream;
+				}else{
+					video.srcObject = event.stream;
+				}
+      video.play();
+		};
+
+		pc.onicecandidate = SendICecandidate;
+		//enviamos la oferta al nuevo usuario
+		list_user.push({id:id_newUser,peer:pc,data:sendChannel});
+	
+	}
+
+
+
+	//funcion para componer mensajes
+	function create_msg(id_origen,id_dest,message){
+		var msg = {
+			id_origen:id_origen,
+			id_dest:id_dest,
+			message:message
+		};
+		return msg;
+	}
+
+	//atamos el audio y el video
+	function User_ItemMedia(){
+		//usuamos el video y el microfono de nuestro ordenador
+		navigator.getUserMedia(items,connect_items,error_items);
+	}
+
+	
+function SendICecandidate(event){
+	console.log(event);
+	if(event.candidate){
+		var ice = {
+			type: 'iceCandidate',
+      label: event.candidate.sdpMLineIndex,
+      id: event.candidate.sdpMid,
+      candidate: event.candidate.candidate
+    };
+
+    var msg ={
+    	id_origen:my_id,
+    	id_dest:id_newUser,
+    	message:ice
+    }
+
+    //enviamos el mensaje
+    console.log('Envimos un mensaje iceCandidate:');
+    console.log(msg);
+		socket.emit('message',msg);
+	}
+}
+
+//////////////////////////////////////////////////////
+////	functiones auxiliares al proceso principal	///
+/////////////////////////////////////////////////////
+
+	function ChannelOpen(){
+		//aqui tenemos que desbloquear para que pueda escribir
+		console.log('canal abierto');
+		$("#input").prop('disabled', true);
+		$("input").prop('disabled', false);
+	}
+
+	function ChannelClose(){
+		console.log('canal cerrado');
+	}
+
+	function ChannelReceive(event){
+		var _data = JSON.parse(event.data);
+	  console.log("Se ha recibido un mensaje")
+	  console.log(_data);
+	  if(_data.info == 'chat'){
+	    WriteChat(_data)
+	  }else if(_data.info == 'file'){
+	   BuildFile(_data)
+	  }
+	}
+
+
+	function WriteChat(_data){
+		console.log('>>> Canal de recepcion chat');
+	  //añadimos lo recibido en
+	  var line = document.createElement('li');
+	  var textnode = document.createTextNode(_data.data);
+	  line.appendChild(textnode);   
+		$('#texto').append(line);
+	}
+
+
+	function BuildFile(_data) {
+		console.log('>>> Recibiendo datos del fichero.');
+	  blob += _data.data;
+	  if(_data.end != undefined){
+	    if(_data.more.type == 'text/plain'){
+	    	console.log(blob);
+	      var link = document.createElement('a');
+	      link.href = 'data:'+_data.more.type+';base64'+blob;
+	      link.target = '_blank';
+	      link.download = _data.more.name;
+	      var textnode = document.createTextNode(_data.more.name);      // Create a text node
+	      link.appendChild(textnode);
+	      $("#listFile").append(link)
+	    
+	    }
+	    /*else{
+	      console.log(blob);
+	      var link = document.createElement('a');
+	      link.href = 'data:'+_data.more.type+';base64'+blob;
+	      link.download = _data.more.name;
+
+	      var img = document.createElement('img');
+	      img.src = 'data:'+_data.more.type+';base64'+ blob;
+	      img.download = _data.more.name;
+	      img.width=80;
+	      img.height=80;
+	      link.appendChild(img); 
+	      document.getElementById("img_receive").appendChild(link)
+	    }*/
+	    blob =',';
+	  }
+  }  
+
+	function send_data(elemento){
+		var msg = $(elemento).val();
+		console.log(msg);
+		console.log(list_user);
+		$('#texto').append('<li>yo:'+msg+'</li>');
+		var data = JSON.stringify({info:'chat',data:name+':'+msg});
+		for(var i=0;i<list_send.length;i++){
+			var user = list_send[i];
+			user.send(data);
+		}
+		$(elemento).val('');
+	}
+
+
+	function connect_items(stream){
+		console.log('los items multimedia que comportiamos son:');
+		console.log(items);
+		streaming = stream;
+		if(webrtcDetectedBrowser == 'firefox'){
+			localvideo.mozSrcObject = stream;
+		}else{
+			localvideo.srcObject = stream;
+		}
+		console.log('Conectamos el video local');
+		console.log(localvideo);
+
+		//localvideo.src = window.URL.createObjectURL(stream);
+		console.log('Envio mensaje stablish_connection con Websocket');
+		console.log('**user:'+name);
+		console.log('**nameRoom:'+nameRoom);
+	  socket.emit('stablish_connection',name,nameRoom);
+
+	}
+
+
+	function blockItems() {
+		$('#itemAudio').attr('disabled',true);
+		$('#itemVideo').attr('disabled',true);
+	}
+
+	function error_items(error){
+		console.log('se ha producido un error');
+		console.log(error);
+	}
+
+	function new_remote(num_user){
+		console.log('se ha creado un nuevo elemento video-remoto')
+		$('#list_remote').append('<video id='+num_user+'></video');
+	}
+
+
+	function addAnswer(id,message){
+		//buscamos quien me ha envia la respuesta para añadir
+		//la sesion remoto
+		for(var i=0;i<list_user.length;i++){
+			var user = list_user[i];
+			if(user.id == id){
+				var RTCSessionDescription = window.RTCSessionDescription || window.mozRTCSessionDescription;
+				list_user[i].peer.setRemoteDescription(new RTCSessionDescription(message));
+			}
+		}
+	}
+
+	function addIceCandidate(id,message){
+		//buscamos quien me ha envia la respuesta para añadir
+		//la sesion remoto
+		for(var i=0;i<list_user.length;i++){
+			var user = list_user[i];
+			if(user.id == id){
+				console.log('encontrado')
+				user.peer.addIceCandidate(message);
+			}
+		}
+	}
+
+
+	/* Reader file  */
+	function processFiles(file){
+ 		console.log('>>> El fichero se ha cargado:');
+	  var files = file[0];
+	  console.log(files);
+	  type = files.type;
+	  name_fich = files.name;
+	  var reader = new FileReader();
+	  reader.onload = function (e) {
+	    var data_file = reader.result;
+	    data_encript = arrayBufferToBase64(data_file);
+	    console.log('Contenido del Fichero:')
+	    console.log(data_encript);
+	    send_chucky();
+	  };
+		reader.readAsArrayBuffer(files);
+	}
+
+	 ///funcion que tranforma aun formato comun el contenido del texto
+	function arrayBufferToBase64(buffer) {  
+	  var binary = '';  
+	  var bytes = new Uint8Array(buffer);    
+	  var len = bytes.byteLength;    
+	  for (var i = 0; i < len; i++) {       
+	    binary += String.fromCharCode( bytes[ i ] );    
+	  }
+	  return btoa(binary);
+	}
+
+	//proceso de envio 
+	function send_chucky(){
+  	var last = false;
+	  fin = inicio + size_data;
+	  if(fin < data_encript.length){
+	  	console.log('Envio datos fichero long:'+size_data)
+	    console.log(data_encript.slice(inicio, fin));
+	    var data = JSON.stringify({info:'file',data:data_encript.slice(inicio, fin)});
+	    for(var i=0;i<list_send.length;i++){
+				var user = list_send[i];
+				user.send(data);
+			}
+	    inicio = fin;
+	    setTimeout(send_chucky, 100);
+	  }else{
+	    last = true;
+	    console.log('Envio ultimos datos delfichero.');
+	    console.log(data_encript.slice(inicio, data_encript.length));
+	    var more_info ={type:type,name:name_fich};
+	    var data = JSON.stringify({info:'file',end:last,data:data_encript.slice(inicio, data_encript.length),more:more_info});
+	    for(var i=0;i<list_send.length;i++){
+				var user = list_send[i];
+				user.send(data);
+			}
+	    inicio = 0;
+		}
+	}
+
+</script>
+</body>
+</html>
