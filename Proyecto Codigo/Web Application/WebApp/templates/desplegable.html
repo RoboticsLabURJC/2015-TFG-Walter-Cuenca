@@ -1,0 +1,22 @@
+
+<table id='tbSearch' class="table table-striped table-inverse">
+	<tbody>
+	{% if ListEvento.count > 0 %}
+		{% for evento in ListEvento %}
+			<tr>
+				<td class="small"><img src="/media/{{evento.imgCartel}}" style="width:80px;height:100px"></td>
+				<td class="small">{{evento.nombre}}</td>
+			</tr>
+		{% endfor %}
+	{% endif%}
+
+
+	{% for cantante in ListCantante %}
+		<tr>
+			<td class="small">
+				<a href="/WebMutimedia/Cantantes/{{cantante.nombre}}"><img src="/media/{{cantante.imgCantante}}" style="width:80px;height:100px"></td>	</a>
+			<td class="small">{{cantante.nombre}}</td>
+		</tr>
+	{% endfor %}
+  </tbody>
+</table>

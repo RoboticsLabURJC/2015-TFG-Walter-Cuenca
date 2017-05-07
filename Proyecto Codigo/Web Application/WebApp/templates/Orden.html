@@ -1,0 +1,107 @@
+{% extends  'esqueletoWeb.html' %}
+{% block CSS %}
+<style type="text/css">
+ /* quitamos los li del formulario*/
+ .field li {
+ 	display: block
+ }
+ /* caracteriticas cuando rellenamos los input */ 
+ .field input, select {
+ 	width: 100%;
+ 	border: 1px solid #ccc;
+  border-radius: 4px;   	
+  padding: 6px 10px;
+  margin: 4px 0;
+ }
+
+ li {
+ 	display: block;
+ }
+</style>
+{% endblock %}
+{% block body %}
+<div class="row">
+  <div class="col-sm-6">
+		<div id='panel_root' class="panel panel-default">
+			<div class="panel-heading">Orden de compra</div>
+			<div class="panel-body">
+				<form method="POST" action=".">
+				{% csrf_token %}
+					<div class="field">
+						{{form.asunto.errors}}
+						<label for="id_nombre"><small>Nombre</small></label>
+						{{form.nombre}}    
+					</div>
+
+					<div class="field">
+						{{form.asunto.errors}}
+						<label for="id_nombre"><small>Apellido</small></label>
+						{{form.apellido}}    
+					</div>
+
+					<div class="field">
+						{{form.asunto.errors}}
+						<label for="id_nombre"><small>Email</small></label>
+						{{form.email}}    
+					</div>
+
+					<div class="field">
+						{{form.asunto.errors}}
+						<label for="id_nombre"><small>Telefono</small></label>
+						{{form.telefono}}    
+					</div>
+
+					<div class="field">
+						{{form.asunto.errors}}
+						<label for="id_nombre"><small>Direccion</small></label>
+						{{form.direccion}}    
+					</div>
+
+					<div class="field">
+						{{form.asunto.errors}}
+						<label for="id_nombre"><small>Codigo Postal</small></label>
+						{{form.codigo_postal}}    
+					</div>
+
+					<div class="field">
+						{{form.asunto.errors}}
+						<label for="id_nombre"><small>Pais</small></label>
+						{{form.pais}}    
+					</div>
+					<button class="btn btn-primary" type="submit"> Enviar </button>
+				</form>
+			</div>
+		</div>
+	</div>
+  <div class="col-sm-6">
+		<div id='panel_root' class="panel panel-default">
+			<div class="panel-heading">Su orden</div>
+			<div class="panel-body">
+				<table class="table table-striped table-inverse">
+			  	<thead>
+			    	<tr>
+			     		<th class="small">Producto</th>
+			     		<th class="small">Precio</th>
+			    	</tr>
+			   	</thead>
+			    <tbody>
+					{% for item in objCart.cart.values %}
+						<tr>
+							<td class="small">
+								<li>Barcelona Bech Festival{{item.name}}</li>
+								<li>{{item.typeTicket}} x {{item.unidades}}</li>
+							</td>
+							<td class="small">{{item.precio}}€</td>
+						</tr>
+					{% endfor %}
+						<tr>
+							<td class="small">Total</td>
+							<td class="small">{{objCart.totalPrice}}€</td>
+						</tr>
+			    </tbody>
+			  </table>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

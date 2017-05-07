@@ -1,0 +1,138 @@
+{% extends "esqueletoWeb.html" %}
+{% block CSS %}
+  <style type="text/css">
+  	/* quitamos los li del formulario*/
+  	.field li {
+  		display: block
+  	}
+
+  	/* caracteriticas cuando rellenamos los input */ 
+  	.field input, select {
+  		width: 100%;
+  		border: 1px solid #ccc;
+    	border-radius: 4px;   	
+    	padding: 6px 10px;
+    	margin: 4px 0;
+  	}
+  	/* tamaño de los paneles */
+  	#panel_datos,#panel_contact ,#panel_fact{
+  	 	width: 45%;
+  	 	float: left;
+  	 	margin-top: 5px;
+  	 	
+  	} 
+
+
+  	#panel_datos{
+  		margin-left:10px;
+  	}
+
+
+  	#panel_contact ,#panel_fact{
+  		margin-left:80px;
+
+  	}
+
+  	#sexo li  {
+  		display: inline;
+  	}
+  </style>
+{% endblock %}
+{% block body %}
+<div id='panel_root' class="panel panel-default">
+	<div class="panel-heading">Register</div>
+</div>
+<div id='panel_root' class="panel panel-default">
+	<div class="panel-body">
+		<form action="." method="POST">
+			{% csrf_token %}
+
+			<div id='panel_datos' class="panel panel-default">
+	    	<div class="panel-heading">Datos Contacto</div>
+			  <div class="panel-body">
+
+			    <div class="field">
+						{{form.asunto.errors}}
+						<label for="id_nombre"><small>Nombre</small></label>
+						{{form.nombre}}    
+					</div>
+
+					<div class="field">
+						{{form.asunto.errors}}
+						<label for="id_apellido"><small>Apellido</small></label>
+						{{form.apellido}}    
+					</div>
+
+					<div class="field">
+						{{form.asunto.errors}}
+						<label for="id_edad"><small>Edad</small></label>
+						{{form.edad}}    
+					</div>
+
+					<div class="field">
+						{{form.asunto.errors}}
+						<label for="id_telefono"><small>Telefono</small></label>
+						{{form.telefono}}    
+					</div>
+
+					<div class="field">
+						{{form.asunto.errors}}
+						<label for="id_pais"><small>Pais</small></label>
+						{{form.pais}}    
+					</div>
+
+					<div class="field">
+						{{form.asunto.errors}}
+						<label for="id_provincia"><small>Provincia</small></label>
+						{{form.provincia}}    
+					</div>
+
+					<div class="field">
+						{{form.asunto.errors}}
+						<label for="id_direccion"><small>Direccion</small></label>
+						{{form.direccion}}    
+					</div>	
+
+					<div id="sexo" class="field">
+						{{form.area.errors}}
+						<label for="id_area_0"><small>Sexo</small></label>
+						{{form.sexo}}    
+					</div>
+			  </div>
+			</div>
+
+
+			<div  id='panel_contact' class="panel panel-default">
+	    	<div class="panel-heading">Datos Aplicacion</div>
+			  <div class="panel-body">
+			   	
+			    <div class="field" >
+						{{form.asunto.errors}}
+						<label for="id_nick"><small>Nick</small></label>
+						{{form.nick}}    
+					</div>
+			    
+					<div class="field">
+						{{form.asunto.errors}}
+						<label for="id_correo"><small>Email</small></label>
+						{{form.correo}}    
+					</div>
+
+			    <div class="field">
+						{{form.asunto.errors}}
+						<label for="id_password"><small>Contraseña</small></label>
+						{{form.password}}    
+					</div>
+
+					<div class="field">
+						{{form.asunto.errors}}
+						<label for="id_password2"><small>Repetir Contraseña</small></label>
+						{{form.password2}}    
+					</div>
+					<button class="btn btn-primary" type="submit"> Enviar </button>
+			  </div>
+	  	</div>
+		</form>
+	</div>
+</div>
+{% endblock %}

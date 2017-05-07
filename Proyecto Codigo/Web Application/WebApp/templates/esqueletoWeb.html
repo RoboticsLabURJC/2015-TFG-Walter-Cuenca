@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+	<title>Music Web</title>
+	<meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/static/JS/SC_Search.js"></script>
+  <!-- Script propios -->
+  <script type="text/javascript">
+
+  	/************************************/
+  	/* funcions para controlar el login */
+  	/************************************/
+  	function SeeLogin() {
+  		$('#Modal_Login').modal();
+  	}
+
+  	$(document).ready(function(){
+	    $('#post_form').on('submit', function(event){
+	  		console.log('ola')
+	    	event.preventDefault();
+	    	console.log("form submitted!")  // sanity check
+	    	create_post();
+			});
+		});
+
+  	function create_post(){
+  		console.log('llamada a AJAX');
+  		/* obtenemos el valor del formulario */
+  		var user = $('#usrname').val();
+  		var psw = $('#psw').val();
+  		console.log(user + ' eere ' + psw);
+  		$.ajax({ 
+		    type: "POST",
+
+		    url:"/WebMutimedia/Login/",
+		    data: {
+		      'usuario':user,
+		      'pass':psw,
+		      'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val(),
+    	},
+    		success: resultLogin,
+    		dataType: 'html',
+  		});
+  	}
+
+  	function resultLogin(data, textStatus, jqXHR){
+  		mensaje = "Usuario y/o password incorrecto"
+  		console.log(data);
+  		if (data) {
+  			location.reload(true);
+  		}else{
+  			$('#login_error').text(mensaje);
+  			$('#login_error').css('text-decoration-color','red');
+  		  $('#login_error').css('text-align','center');
+  		}		
+  	}
+  </script>
+  {% block CSS %}
+  {% endblock %}
+  {% block JS %}
+  {% endblock %}
+	<style type="text/css">
+    p {
+  		font-family: Arial, Helvetica, Verdana, cursive ;
+		}
+	</style>
+
+</head>
+<body>
+	<!-- Init Nav Tab -->
+	<nav class="navbar navbar-inverse">
+	  <div class="container">
+	    <div class="navbar-header">
+	      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+	        <span class="icon-bar"></span>
+	        <span class="icon-bar"></span>
+	        <span class="icon-bar"></span> 
+	      </button>
+	      <a class="navbar-brand" href="#">WebSiteName</a>
+	    </div>
+
+	    <div class="collapse navbar-collapse" id="myNavbar">
+	      <ul class="nav navbar-nav">
+	        <li class="active"><a href="/WebMutimedia/">Home</a></li>
+	        <!-- Init desplegable Cantantes  -->
+	        <li class="dropdown">
+	        	<a class="dropdown-toggle" data-toggle="dropdown" href="#">Cantantes
+	        	<span class="caret"></span></a>
+	        	<ul class="dropdown-menu">
+	        		{% for cantante in listCantantes %}
+	        		 <li><a href="/WebMutimedia/Cantantes/{{cantante.id}}">{{cantante.nombre}}</a></li>
+	        		{% endfor %}
+	        	</ul>
+	        </li>
+	        <!-- Fin desplegable Cantantes -->
+	        <!-- Init desplegable Eventos  -->
+	        <li class="dropdown">
+	        	<a class="dropdown-toggle" data-toggle="dropdown" href="#">Eventos
+	        	<span class="caret"></span></a>
+	        	<ul class="dropdown-menu">
+	        		{% for evento in listFestivales %}
+	        		 <li><a href="/WebMutimedia/Eventos/{{evento.id}}">{{evento.nombre}}</a></li>
+	        		{% endfor %}
+	
+	        	</ul>
+	        </li> 
+	        <!-- Fin desplegable -->
+		      <!-- Init buscador -->
+	        <li> 
+	        	{% csrf_token %}
+	          <input id="textSearch" onchange="sendInfo()" type="text"  class="form-control" placeholder="Search" style="width: 250px;margin-top: 8px;margin-left: 25px" />
+	          <div id='listSearch'>
+	        	</div>
+	        </li> 
+ 					<!-- FIN buscador -->
+	      </ul>
+	     
+	     	<!-- INIT ELEMENT RIGTH -->
+       	<ul class="nav navbar-nav navbar-right">
+       		<li><a href="/WebMutimedia/Contacta">Contacta</a></li> 		
+       		{% if user.is_authenticated %}
+    			<li><a><span class="glyphicon glyphicon-user"></span> {{user.username}}</a></li>
+    			<li><a href="/WebMutimedia/Logout">Logout</a></li>
+					{% else %}
+					<li><a href="/WebMutimedia/Register">Register</a></li>
+					<li onclick="SeeLogin()"><a>Login</a></li>
+					{% endif %}
+					{% if user.is_authenticated %}
+      		<li class="dropdown">
+        		<a href="#" class="dropdown-toggle" data-toggle="dropdown">Perfil<b class="caret"></b></a>
+        		<ul class="dropdown-menu">
+          		<li><a href="/WebMutimedia/Perfil/">Consultar</a></li>
+		          <li><a href="#">Modificar</a></li>
+        		</ul>
+      		</li>
+      		{% endif %}
+      		<!-- INIT content cart -->
+      		<li>
+      			<a href="/WebMutimedia/DetailCar/">
+      				<span class="glyphicon glyphicon-shopping-cart"></span>
+      				{% if items > 0 %}
+      					({{items}}) : {{precio}}€
+      				{% else %}
+      					 0€
+      				{% endif %}
+      			</a> 
+      		</li>
+      		<!-- Fin content cart -->
+    	</ul>
+	 		<!-- FIN ELEMENT RIGTH -->
+	  </div>
+	</nav>
+	<!-- Fin Nav Tab -->
+	<!-- Init Body -->
+	<div class="container">
+		{% block body %}
+		<div class="row">
+			<div class="col-sm-12">
+				<!-- Init carrusel grande-->
+			<div id="myCarousel" class="carousel slide" data-ride="carousel">
+			  <!-- Indicators -->
+			  <ol class="carousel-indicators">
+			    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+			    <li data-target="#myCarousel" data-slide-to="1"></li>
+			    <li data-target="#myCarousel" data-slide-to="2"></li>
+			    <li data-target="#myCarousel" data-slide-to="3"></li>
+			    <li data-target="#myCarousel" data-slide-to="4"></li>
+			  </ol>
+
+			  <!-- Wrapper for slides -->
+			  <div class="carousel-inner" role="listbox">
+			    <div class="item active">
+			      <img style="height:525px;width:100%" class="img-responsive" src="/static/Barcelona-Beach-Festival.jpg">
+			    </div>
+
+			    <div class="item">
+			      <img style="height:525px;width:100%" class="img-responsive" src="/static/headhunterz.jpg">
+			    </div>
+
+			    <div class="item">
+			      <img style="height:525px;width:100%" class="img-responsive" src="/static/krewella.jpg">
+			    </div>
+
+			    <div class="item">
+			      <img style="height:525px;width:100%" class="img-responsive" src="/static/ultra-music-festival.jpg">
+			    </div>
+			    <div class="item">
+			      <img style="height:525px;width:100%" class="img-responsive" src="/static/ultra-miami.jpg">
+			    </div>
+			  </div>
+			  <!-- Left and right controls -->
+			  <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+			    <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+			    <span class="sr-only">Previous</span>
+			  </a>
+			  <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+			    <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+			    <span class="sr-only">Next</span>
+			  </a>
+			</div>
+		</div>
+		</div>
+
+		<div class="row">
+		<br>
+			<div class="col-sm-6">
+				<div id='panel_root' class="panel panel-default">
+	  			<div class="panel-heading">Novedades Cantantes</div>
+	  		</div>
+				{% for cantante in cantantes %}
+				 <div id='panel_root' class="panel panel-default">
+  				<div class="panel-body">
+						<!-- Left-aligned -->
+						<div class="media">
+						  <div class="media-left">
+						  <a href="/WebMutimedia/Cantantes/{{cantante.id}}">
+						  	<img src="/media/{{cantante.imgCantante}}" class="media-object" style="height:220px;width:210px">
+						  </a>
+						  </div>
+						  <div class="media-body">
+						    <h5 class="media-heading">{{cantante.nombre}} <small><i> {{cantante.fechaModif|date:'SHORT_DATETIME_FORMAT'}}</i></small></h5>
+						    <p id='name'>{{cantante.inf|truncatewords:60}}</p>
+						  </div>
+						</div>
+					</div>
+				</div>
+        {% endfor %}
+			</div>
+			<div class="col-sm-6">
+				<div id='panel_root' class="panel panel-default">
+	  			<div class="panel-heading">Novedades Eventos</div>
+	  		</div>
+				{% for evento in eventos %}
+				<div id='panel_root' class="panel panel-default">
+  				<div class="panel-body">
+						<!-- Left-aligned -->
+						<div class="media">
+						  <div class="media-left">
+						  	<a href="/WebMutimedia/Eventos/{{evento.id}}">
+						  		<img src="/media/{{evento.imgCartel}}" class="media-object" style="height:220px;width:210px">
+						  	</a>
+						  </div>
+						  <div class="media-body">
+						    <h5 class="media-heading">{{evento.nombre}}<small><i> {{evento.fechaModif|date:'SHORT_DATETIME_FORMAT'}}</i></small></h5>
+						    <p>Lorem ipsum...</p>
+						  </div>
+						</div>
+					</div>
+				</div>
+				{% endfor %}
+			</div>
+		</div>
+
+		{% endblock %}
+		<!-- Init modal login -->
+		<div class="modal fade" id="Modal_Login">
+			<!-- Init contenido -->
+			<div class="modal-dialog">
+				<!-- Modal content-->
+      	<div class="modal-content">
+      		<div class="modal-header" style="padding:35px 50px;">
+          	<h4><span class="glyphicon glyphicon-lock"></span> Login</h4>
+          </div>
+
+          <div class="modal-body" style="padding:40px 50px;">
+	          <form  id="post_form" method="POST">
+	          	{% csrf_token %}
+	            <div class="form-group">
+	            	<p id="login_error" style="position: center"></p>
+	              <label for="usrname"><span class="glyphicon glyphicon-user"></span> Username</label>
+	              <input type="text" class="form-control" id="usrname" placeholder="Enter Username">
+	            </div>
+	            <div class="form-group">
+	              <label for="psw"><span class="glyphicon glyphicon-eye-open"></span> Password</label>
+	              <input type="password" class="form-control" id="psw" placeholder="Enter password">
+	            </div>
+	            <button type="submit" class="btn btn-success btn-block"><span class="glyphicon glyphicon-off"></span> Login</button>
+	          </form>
+        	</div>
+
+        	<div class="modal-footer">
+        	<p>Si aun no se ha registrado, pulse <a href="/WebMutimedia/Register">Registrarse</a></p>
+        	</div>
+
+        </div>
+      	</div>
+			</div>
+		</div>
+		<!-- Fin modal login -->
+	</div>
+	<!-- Fin Body -->
+</body>
+</html>

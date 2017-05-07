@@ -1,0 +1,73 @@
+{% extends "esqueletoWeb.html" %}
+  {% block CSS %}
+  <style type="text/css">
+  	.field li {
+  		display: block
+  	}
+
+  	.field textarea,select {
+  		width: 100%;
+  		border: 1px solid #ccc;
+    	border-radius: 4px;   	
+    	padding: 6px 10px;
+    	margin: 4px 0;
+  	}
+
+  	.field input, select {
+  		width: 100%;
+  		border: 1px solid #ccc;
+    	border-radius: 4px;   	
+    	padding: 6px 10px;
+    	margin: 4px 0;
+  	}
+
+  	#area li {
+  		display: inline;
+  	}
+
+  </style>
+  {% endblock %}
+{% block body %}
+
+<div id='panel_root' class="panel panel-default">
+	<div class="panel-heading">Contacta</div>
+</div>
+<div id='panel_root' class="panel panel-default">
+	<div class="panel-body">		
+		<form action="." method="POST">
+			{% csrf_token %}
+		
+			<div class="field">
+				{{form.asunto.errors}}
+				<label for="id_nombre">Nombre</label>
+				{{form.nombre}}    
+			</div>
+
+			<div class="field">
+				{{form.asunto.errors}}
+				<label for="id_correo">Email</label>
+				{{form.correo}}    
+			</div>
+
+			<div class="field">
+				{{form.asunto.errors}}
+					<label for="id_numeroTlf">Telefono</label>
+				{{form.numeroTlf}}    
+			</div>
+
+			<div id="area" class="field">
+				{{form.area.errors}}
+				<label for="id_area_0">Area:</label>
+				{{form.area}}    
+			</div>
+
+			<div class="field">
+				{{form.area.errors}}
+				{{form.motivo}}    
+			</div>		
+		<button class="btn btn-primary" type="submit"> Enviar </button>
+	</form>
+
+	</div>
+</div>
+{% endblock %}

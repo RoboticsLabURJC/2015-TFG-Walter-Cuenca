@@ -1,0 +1,57 @@
+{% extends "esqueletoWeb.html" %}
+{% block body%}
+<div class="row">
+	<div class="col-sm-12">
+		<div id='panel_root' class="panel panel-default">
+			<div class="panel-heading">Perfil Usuario</div>
+			<div class="panel-body">
+			  <div class="col-sm-9">
+					<img class="img-responsive" src="/media/{{infoUser.perfilImg}}">
+				</div>
+				<div class="col-sm-3">
+					<p>Informacion almacenada del usuario</p>
+					<p>Nick: {{infoUser.usuario.username}}</p>
+					<p>Nombre: {{infoUser.usuario.first_name}}</p>
+					<p>Apellido: {{infoUser.usuario.last_name}}</p>
+					<p>Email: {{infoUser.usuario.email}}</p>
+					<p>Telefono: {{infoUser.telefono}}</p>
+					<p>Pais: {{infoUser.pais}}</p>
+					<p>Provincia: {{infoUser.provincia}}</p>
+					<p>Direccion: {{infoUser.direccion}}</p>
+					{% if infoUser.sexo = 'H' %}
+					<p>Sexo: Hombre</p>
+					{% else %}
+					<p>Sexo: Mujer</p>
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="row" style="height: 250px">
+	<div class="col-sm-12">
+		<div id='panel_root' class="panel panel-default">
+			<div class="panel-heading">Compras</div>
+			<div class="panel-body" style="height: 250px" >
+				<div class="col-sm-12">
+					{% for orden in infoUser.listCompra.all %}
+					<div class="col-sm-3 col-md-4">
+						<p>Orden #{{orden.id}}</p>
+						<p>Precio:55€</p>
+						{% for Items in orden.producto.all %}
+							<img class="img-responsive" src="/media/{{Items.imgCartel}}" style="height: 150px">
+							<p>{{Items.nameProduct}}</p>
+							<p>{{Items.typeProduct}}</p>
+							<p>{{Items.typeTicket}}</p>
+							<p>{{Items.cantidad}}</p>
+							<p>{{Items.precio}}</p>
+						{% endfor %}
+					</div>
+					{% endfor %}
+				</div>			
+			</div>
+		</div>
+	</div>
+</div>
+<div>
+{% endblock %}

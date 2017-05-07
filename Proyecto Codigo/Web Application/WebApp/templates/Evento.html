@@ -1,0 +1,164 @@
+{% extends  'esqueletoWeb.html' %}
+{% block JS %}
+  <script type="text/javascript" src="/static/JS/SC_Maps.js"></script>
+  <script  src="http://maps.googleapis.com/maps/api/js?key=AIzaSyBliq3S6sQ0pJsT1xWJDiMtPuM1sn9xzaM"></script>
+{% endblock %}
+{% block CSS %}
+<style type="text/css">
+  .panel-heading {
+   text-align: center;
+  }
+  h4 {
+    text-align: center;
+  }
+</style>
+{% endblock %}
+
+{% block body %}
+
+<div id='panel_root' class="panel panel-default">
+  <div class="panel-heading">{{evento.nombre}}</div>
+</div>
+  <!-- Init Tabs <div class="row">
+    <h2 style="position: relative; left: 35%;">{{evento.nombre}}</h2>
+  </div>-->
+  <!-- Init Acceso a Tabs -->
+  <ul class="nav nav-tabs">
+    <li class="active"><a data-toggle="tab" href="#menuInfo">Detalle</a></li>
+    <li><a data-toggle="tab" href="#menuLocalizacion">Localizacion</a></li>
+    <li><a data-toggle="tab" href="#menuCantantes">Cantantes</a></li>
+    <li><a data-toggle="tab" href="#menuEntradas">Entradas</a></li>
+  </ul>
+    <!-- Fin Acceso a Tabs -->
+    <!-- Init Contenido Tabs -->
+    <div class="tab-content">
+      <!-- Init Tab Detalle -->
+      <div id="menuInfo" class="tab-pane fade in active">
+        <h3></h3>
+        <div class="row">
+          <div class="col-sm-6">
+            <div id='panel_root' class="panel panel-default">
+              <div class="panel-body">
+                <img src="/media/{{evento.imgCartel}}" style="width: 100%">
+              </div>
+            </div>
+          </div>
+
+          <div class="col-sm-6">
+            <div id='panel_root' class="panel panel-default">
+              <div class="panel-heading">Información</div>
+              <div class="panel-body">
+                <p>Tipo Evento: {{evento.tipoEvento}}</p>
+                <p>Pais: {{evento.pais}}</p>
+                <p>Ciudad: {{evento.ciudad}}</p>
+                <p id="direct">Dirección:{{evento.lugar}}</p>
+                <p>Fecha: {{evento.fecha|date:"F j, Y"}}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-sm-6">
+            <div id='panel_root' class="panel panel-default">
+              <div class="panel-heading">AfterMovie</div>
+              <div class="panel-body">
+                <iframe width="500" height="315" src="https://www.youtube.com/embed/D5N7U7ABCqk" frameborder="0" allowfullscreen></iframe>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <!-- FIn Tab Detalle -->
+
+      <!-- Init Tab Localizacion -->
+      <div id="menuLocalizacion" class="tab-pane fade">
+        <h3></h3>
+        <p>En este apartado se muestra la localización del evento,para cargar el mapa pulse <a onclick="WarchMap()">aqui.</a></p>
+        <div  id="Maps" style="width:100%;height:520px;"></div>
+        <br>
+        <p>Si necesita obtener la localizacion de hoteles o restaurantes en las cercanias al evento puede pulsar en los elementos que se muestran en la siguiente tabla.</p>
+        <table class="table table-striped">
+          <thead></thead>
+          <tbody>
+            <tr onclick="SendInfo('hotel')">
+              <td class="small">Hoteles</td>
+            </tr>
+            <tr onclick="SendInfo('food')">
+              <td class="small">Restaurantes</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- Fin Tab Localizacion -->
+
+      <!-- Init Tab Cantantes --> 
+      <div id="menuCantantes" class="tab-pane fade">
+        <h3></h3>
+        <div class="row">
+        {% for cantante in evento.listcantantes.all %}
+          <div class="col-sm-5 col-md-3">
+            <a href="/WebMutimedia/Cantantes/{{cantante.nombre}}" class="thumbnail" id="pop">
+              <img src="/media/{{cantante.imgCantante}}">
+            </a>
+            <h4>{{cantante.nombre}}</h4>
+          </div>
+        {% endfor %}
+        </div>
+      </div>
+      <!-- Fin Tab Cantantes -->
+
+      <!-- Init Tab Entradas -->
+      <div id="menuEntradas" class="tab-pane fade">
+        <h3></h3>
+        <div class="row">
+          <div class="col-sm-4">
+            <div id='panel_root' class="panel panel-default">
+              <div class="panel-body">
+                <img width="320" height="450"  class="img-responsive" src="/media/{{evento.imgCartel}}">
+                <p>{{evento.tipoEvento}}:{{evento.nombre}}</p>
+                <p>Dirección: {{evento.lugar }}</p>
+                <p>Fecha: {{evento.fecha|date:'SHORT_DATETIME_FORMAT'}}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-sm-8">
+          {% for ticket in evento.listEntradas.all %}
+            <div class="col-sm-4 col-md-4">
+              <div id='panel_root' class="panel panel-default">
+                <div class="panel-heading">{{ticket.tipoEntrada}}</div>
+                <div class="panel-body">
+                  <p>Precio:{{ticket.precio}}€</p>
+                  <p>Uni.Disponibles:{{ticket.numEntradas}}</p>
+                  <p>Description:{{ticket.descrip}}</p>
+                  <form method="POST" action="/WebMutimedia/AddCar/{{evento.id}}/{{ticket.id}}/">
+                    {% csrf_token %}
+                    {{form.as_p}}
+                    <button type="submit" class="btn btn-default">Add Car</button>
+                  </form>
+                 
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+          </div> 
+        </div>
+      </div>
+      <!-- Fin Tab Entradas -->
+    <!-- FIN Tabs -->
+  </div>
+</div>
+{% endblock  %}
+
+
+
+
+
+
+
+
+
+
+
+
+
