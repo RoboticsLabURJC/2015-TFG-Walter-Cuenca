@@ -1,0 +1,105 @@
+\chapter{Practica Comecocos Web}
+\section*{Funciones auxiliares}
+Para la creación de alguna de las funcionalidad se han necesitado las funciones auxiliares que citamos a continuación.
+\\La función \textbf{valor\_mouse\_real} permite conocer la posición del ratón cuando el usuario lo pulse dentro del canvas.
+\begin{lstlisting}[
+caption=Posicion del ratón.]
+ function valor_mouse_real(event,canvas){
+  var rect = canvas.getBoundingClientRect();
+  var coordenada = {};
+  coordenada.x = event.clientX - rect.left;
+  coordenada.y  = event.clientY - rect.top;
+  return  coordenada;
+ }
+\end{lstlisting}
+Para capturar los eventos del teclado se ha creado la función \textbf{NextPosicion}.
+\begin{lstlisting}[
+caption=Actualizacion posicion a traves del teclado]
+function NextPosPacman(e){
+ if(e.code == 'ArrowDown'){
+  Pac.speed_x = 0;
+  Pac.speed_y = 0.5;
+  Pac.type_move = 'y_pos';
+  Pac.yDraw = 32;
+ }else if(e.code == 'ArrowUp'){
+  Pac.speed_x = 0;
+  Pac.speed_y = -0.5;
+  Pac.type_move = 'y_neg';
+  Pac.yDraw = 96;
+ }else if(e.code == 'ArrowRight'){
+  Pac.speed_x = 0.5;
+  Pac.speed_y = 0;
+  Pac.type_move = 'x_pos';
+  Pac.yDraw = 0;
+ }else if (e.code == 'ArrowLeft'){
+  Pac.speed_x = -0.5;
+  Pac.speed_y = 0;
+  Pac.type_move = 'x_neg';
+  Pac.yDraw = 64;
+ }
+ if(e.code == 'KeyP'){
+  GameArea.text = 'Pause';
+  start_crono = false;
+  GameArea.AudioGame.pause();
+  GameArea.stop();
+  clearInterval(Ghost.interval);
+ }else if(e.code == 'KeyL'){
+  start_crono = true;
+  GameArea.text = 'Play';
+  GameArea.interval =  setInterval(updateGameArea, 100);
+  Ghost.interval = setTimeout(nextG,300);
+  }
+}
+\end{lstlisting}
+El cronometro se crea vinculando un timer \textbf{CronoTime} que actualiza la variable \textbf{time}.
+\begin{lstlisting}[
+caption=Creacion del cronometro.]
+ function CronoTime(){
+ var auxSecond = GameArea.seconds;
+ var auxMin =  GameArea.min;
+ var auxHora =  GameArea.horas;
+ if(GameArea.start_crono){	
+  GameArea.seconds += 1;
+  if(auxSecond < 10){
+   auxSecond = '0'+GameArea.seconds;
+  }else{
+   auxSecond = GameArea.seconds;
+  }
+  if(GameArea.seconds > 59){
+   GameArea.min += 1;
+   GameArea.seconds = 0;
+  }
+  if(auxMin< 10){
+   auxMin = '0'+GameArea.min; 
+  }else{
+   auxMin = GameArea.min;
+  }
+  if(GameArea.min > 59){
+   GameArea.horas += 1;
+   GameArea.min = 0;
+  }
+  if(auxHora < 10){
+   auxHora = '0'+GameArea.horas; 
+  }else{
+   auxHora = GameArea.horas;
+   }
+  }
+  GameArea.time = auxHora+':'+auxMin+':'+auxSecond;
+  setTimeout(CronoTime,1000)	
+ }
+\end{lstlisting}
+Para finalizar la función \textbf{PosMouseClick} permite guardar el tiempo empleado en comer todos los cocos del juego.
+\begin{lstlisting}[
+caption=Guardar marcador.]
+function PosMouseClick(evt){
+ GameArea.canvas.addEventListener('click',function(evt){
+  var coor_mouse = valor_mouse_real(evt,GameArea.canvas);
+   if(coor_mouse.x > GameArea.canvas.width/2-(4*40) && 
+    coor_mouse.x < GameArea.canvas.width/2+(4*40)){
+     if(coor_mouse.y > 13*40 && coor_mouse.y < 14.5*40){
+      /* save localStorage */
+      localStorage.setItem("user",GameArea.time);
+     }
+    }
+  });
+\end{lstlisting}

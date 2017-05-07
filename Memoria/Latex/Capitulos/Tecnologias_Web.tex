@@ -1,0 +1,652 @@
+\chapter{Infraestructura}
+\section{HTML5}
+Este nuevo estándar incorpora una series de APIs accesibles desde JavaScript que surgen para dotar de funcionalidad nativa a la Web sin necesidad de utilizar plugins externos.Los distintos ingredientes asociados a HTML5\cite{html5} los describimos en las siguientes secciones.
+\subsection{Canvas}
+Se trata de una nueva etiqueta,\textit{<canvas>}\cite{canvas}, que permite trabajar con gráficos dentro de la web sin la necesidad de emplear programas externos.Dispone de varios métodos que permiten realizar múltiples tareas de carácter gráfico que explicamos a continuación.
+\subsubsection*{Context 2d}
+Es el punto de partida para utilizar las propiedades de canvas.Por ello, es necesario acceder a la etiqueta canvas existente en el documento para obtener el contexto.
+\\El contexto puede ser 2D y 3D dependiendo del tipo de elementos que se quieren dibujar.
+\begin{lstlisting}[
+caption=Acceso al contexto de Canvas.]
+ var canvas = document.getElementById('tutorial');
+ var ctx = canvas.getContext('2d');
+\end{lstlisting}
+\subsubsection*{Formas Disponibles}
+Por medio del contexto tenemos acceso a un conjunto de métodos que permiten dibujar primitivas predefinidas,que se explican a continuación.
+\begin{enumerate}
+\item Trazos
+	\begin{itemize}
+      \item \textbf{beginPath():} Marcan el inicio de un nuevo trazo.
+      \item \textbf{closePath():} Marcan el final del trazo definido.
+      \item \textbf{stroke():} Dibuja el contorno de la forma.
+      \item \textbf{fill():} Dibuja una forma solida rellenando el área del trazo.
+	\end{itemize}
+\item Líneas: La función \textit{lineTo(x,y)} permite dibujar lineas.Toma como punto de partida el ultimo punto conocido y como  punto final la coordenada(x,y) que se le pasa .
+\item Movimiento : La función \textit{moveTo(x, y)} permite moverse a un punto del lienzo para empezar a dibujar a partir de el.
+\begin{figure}[!h]
+\begin{center}
+   \includegraphics[width=0.7\linewidth]{Figures/lineas_Canvas}
+	\decoRule
+	\caption[Ejemplo del dibujo de un trazo]{Ejemplo del dibujo de un trazo.}
+\label{fig:lineas_Canvas}
+\end{center}
+\end{figure}
+\item Rectángulos
+	\begin{itemize}
+  		\item \textbf{fillRect(x, y, width, height):} Dibuja un rectángulo relleno.
+  		\item \textbf{strokeRect(x, y, width, height):} Dibuja el contorno de un rectángulo.
+  		\item \textbf{clearRect(x, y, width, height):} Borra el área rectangular especificada.
+	\end{itemize}
+\begin{figure}[!h]
+\begin{center}
+   \includegraphics[width=0.7\linewidth]{Figures/Rectangulos_Canvas}
+	\decoRule
+	\caption[Ejemplo rectángulos canvas]{Ejemplo rectángulos canvas.}
+\label{fig:Rectangulos_Canvas}
+\end{center}
+\end{figure}
+\item Arcos: Por medio de la función \textbf{arc(x,y,radio,angInit,angFin,true)} dibujamos una circunferencia o media circunferencia. Para realizar este proceso establece como centro las coordenadas (x,y) ,su tamaño depende del radio que se especifique y por ultimo establecemos el angulo inicial y final que queremos.
+\end{enumerate}
+\subsubsection*{Estilos y Colores}
+Para poder aplicar colores a los dibujos que se crean tenemos a nuestra disposición dos propiedades que podemos usar:
+\begin{itemize}
+\item \textbf{fillStyle:} Establece el color de relleno de la figura.
+\item \textbf{strokeStyle:} Establece el color del contorno de la figura.
+\end{itemize}
+Además de dibujar formas opacas en el lienzo,también podemos dibujar formas semitransparentes (o translúcidas). Esto se realiza  estableciendo la propiedad globalAlpha o asignando un color semitransparente al estilo de trazo y / o de relleno.
+\begin{itemize}
+\item \textbf{globalAlpha:} Aplica el valor de transparencia especificado a todas las formas futuras del lienzo.El valor debe estar entre 0,0 (totalmente transparente) y 1,0 (completamente opaco).
+\end{itemize}
+Por otra parte podemos establecer el estilo de las lineas que componen las figuras,por medio las siguientes propiedades:
+\begin{itemize}
+\item \textbf{lineWidth:} Establece el ancho de las lineas.
+\item \textbf{lineCap:} Establece el aspecto de los extremos de las lineas.Estos atributos pueden ser: butt(extremos cuadrado),round(extremos redondeados) y square()
+\item \textbf{lineJoin:} Establece el aspecto de las esquinas donde se encuentran las lineas.Estos atributos pueden ser: round() , bevel() y miter().
+\end{itemize}
+\subsubsection*{Texto}
+Permite generar cadenas de texto dentro de canvas por medio del método \textbf{fillText(text,x,y)} que recibe como parámetro el texto y la coordenada donde se dibujaran,figura \ref{fig:Texto_Canvas}.
+\begin{itemize}
+\item \textbf{fillText(text,x,y):} Dibuja el texto dado en las coordenadas(x,y) del lienzo.
+\item \textbf{strokeText(text,x,y):} Dibuja el texto dado en las coordenadas(x,y) del lienzo sin relleno.
+\end{itemize}
+Ademas nos permite establecer el estilo del texto por medio de las siguientes propiedades:
+\begin{itemize}
+\item \textbf{font:} Estilo del texto que se utiliza al dibujar el texto.Los valores permitidos son similares a las propiedades CSS font.
+\item \textbf{textAlign:} Alinea el texto.Los valores disponibles son: start,end,left,rigth o center.
+\item \textbf{direction:} Direccionalidad del texto.
+\end{itemize}
+\begin{figure}[!h]
+\begin{center}
+   \includegraphics[width=0.8\linewidth]{Figures/Texto_Canvas}
+	\decoRule
+	\caption[Ejemplo texto canvas]{Ejemplo texto canvas.}
+\label{fig:Texto_Canvas}
+\end{center}
+\end{figure}
+\subsubsection*{Imágenes}
+Para importar imágenes en e lienzo es necesario obtener la referencia de un objeto HTMLImageElement como fuente y dibujarla en el lienzo por medio de la función drawImage().  
+\\Para cargar una imagen externa es necesario genera un objeto HTMLImageElement por medio de JavaScript.Para ello, utilizamos el constructor \textit{Image()} en el que definimos la dirección de la imagen en el atributo \textit{src} y por medio del método \textit{load} nos aseguraremos que la carga se ha completado.
+\\Tras obtener la referencia a nuestra imagen podemos utilizar los método disponibles para cargar las imágenes en el lienzo.A continuación,se muestra las variantes del método ya que se encuentra sobrecargado. 
+\begin{itemize}
+\item \textbf{drawImage(img,x,y):} Dibuja la imagen especifica en las coordenadas(x,y) del lienzo.
+\item \textbf{drawImage(image, x, y, width, height):} Dibuja la imagen especifica en las coordenadas(x,y) estableciendo la escala en la que se dibuja por medio de los parámetros width y height, figura \ref{fig:ImagenScale_Canvas}.
+\begin{figure}[!h]
+\begin{center}
+   \includegraphics[width=0.7\linewidth]{Figures/ImagenScale_Canvas}
+	\decoRule
+	\caption[Ejemplo escalado de imagen canvas.]{Ejemplo escalado de imagen canvas.}
+\label{fig:ImagenScale_Canvas}
+\end{center}
+\end{figure}
+\item \textbf{drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight):} Dada una imagen, esta función toma el área de la imagen de origen por el rectángulo cuya esquina superior izquierda es (sx,sy) y cuya anchura y la altura son sWidth y sHeight, colocándolo en el lienzo en las coordenadas(dx,dy) y escalado por medio de dWidthy dHeight, figura \ref{fig:ImagenRecorte_Canvas}.
+\begin{figure}[!h]
+\begin{center}
+   \includegraphics[width=0.3\linewidth]{Figures/ImagenRecorte_Canvas}
+	\decoRule
+	\caption[Ejemplo recorte imagen canvas.]{Ejemplo recorte imagen canvas.}
+   \label{fig:ImagenRecorte_Canvas}
+\end{center}
+\end{figure}
+\end{itemize}
+\subsubsection*{Transformaciones}
+Antes de indicar las transformaciones disponibles es necesario conocer los métodos \textbf{save()} y \textbf{restore()}.El primero se utiliza para guardar el estado del lienzo antes de aplicar un cambio en el lienzo mientras que el otro se encarga de recuperar el estado del lienzo guardado.
+\\Ahora es momento de presentar las distintas transformaciones que se pueden utilizar
+\begin{itemize}
+\item \textbf{translate(x,y):} Mueve el lienzo y su origen a la coordenada (x,y).
+\item\textbf{ rotate(angle):} Gira el lienzo en sentido a las agujas del reloj hasta encontrar el angulo (radianes) indicado.
+\item \textbf{scale(x,y):} Escala x e y unidades del lienzo. Se tratan de números reales,si son menores a la unidad disminuyen el tamaño encaso contrario aumentan el tamaño.
+\end{itemize}
+\subsection{Media}
+El nuevo estándar incorpora etiquetas que permiten incorporar contenido multimedia\cite{multimedia} en la web de forma nativa ya que antes era necesario utilizar puglins externos.La etiqueta \textit{<video>} permite incrustar un vídeo en la web e incorpora la posibilidad de establecer múltiple formatos ya que no todos los formatos de vídeo son compatibles en cada uno de los navegador.
+\begin{itemize}
+    \item Normalmente, un contenedor WebM empaqueta audio Ogg Vorbis con vídeo VP8 / VP9. Esto se apoya principalmente en Firefox y Chrome.
+    \item Un contenedor MP4 suele empaquetar audio AAC o MP3 con vídeo H.264. Esto se apoya principalmente en Internet Explorer y Safari.
+    \item El contenedor Ogg más antiguo tiende a ir con Ogg Vorbis audio y vídeo Ogg Theora. Esto fue apoyado principalmente en Firefox y Chrome, pero básicamente ha sido reemplazado por el mejor formato WebM. 
+\end{itemize}
+Las principales características de las que dispone la etiqueta \textit{<video>} son las siguientes:
+\begin{itemize}
+  \item\textbf{widtg/height:} Tamaño del vídeo
+  \item \textbf{autplay:} Indica que una vez se ha cargado el elemento empiece la reproducción automáticamente.
+  \item \textbf{loop:} Se crea un bucle en el que se repite indefinidamente el vídeo.
+  \item \textbf{muted:} Desactiva el sonido.
+  \item \textbf{poster:} Toma la dirección de una imagen que se muestra antes de empezar la reproducción del vídeo.
+  \item \textbf{src:} Contiene la ruta de acceso al vídeo
+  \item \textbf{controls:} Permite a los usuarios pausar , reproducir o ajustar el volumen del vídeo.
+\end{itemize}
+Ademas tenemos la etiqueta \textit{<audio>} que permite incrustar audio en la web,en cuanto a su funcionalidad es similar al de la etiqueta \textit{<video>} aunque no presenta un interfaz gráfico.
+\subsection{WebSockets}
+Internet se ha creado a partir del paradigma solicitud/respuesta de HTTP. Un cliente carga una página web, se cierra la conexión y no ocurre nada hasta que el usuario hace clic en un enlace o envía un formulario.
+\\Hace algún tiempo que existen tecnologías que intentan simular este comportamiento, como por ejemplo \textbf{Comet}. Uno de los trucos más comunes para crear la ilusión de una conexión iniciada por el servidor se denomina Long Polling. \\Con el Long Polling, el cliente abre una conexión HTTP con el servidor, el cual la mantiene abierta hasta que se envíe una respuesta. Cada vez que el servidor tenga datos nuevos, enviará la respuesta.
+\\La siguiente lista de características permiten que WebSockets\cite{Websockets} posea ese comportamiento sin necesidad de utilizar trucos como en caso de \textbf{Comet}, figura \ref{fig:websocketsDiag}.
+\begin{enumerate}
+\item \textbf{Conexión bidireccional:} Esta conexión se produce en tiempo real y se mantiene permanentemente abierta hasta que se cierre de manera explícita.
+\item \textbf{Gran rendimiento y escalabilidad:} Si un socket esta abierto, el servidor puede enviar datos a todos los clientes conectados al socket, sin tener que estar constantemente procesando peticiones.
+\item \textbf{Latencia:} Como el socket está siempre abierto y escuchando, los datos son enviados inmediatamente desde el servidor al navegador.
+\item \textbf{Transmisión de datos:} Los datos a transmitir se reducen también de manera drástica, pasando de un mínimo de 200-300 bytes en peticiones Ajax, a 10-20 bytes.
+\end{enumerate}
+\begin{figure}[!h]
+\begin{center}
+   \includegraphics[width=0.5\linewidth]{Figures/websocketsDiag}
+	\decoRule
+	\caption[Comparación Polling-WebSockets]{Comparación Polling-WebSockets.}
+\label{fig:websocketsDiag}
+\end{center}
+\end{figure}
+\subsubsection*{Funcionamiento API}
+El cliente establece una conexión WebSockets\cite{WebSocketEjemplo} a través de un proceso conocido como \textbf{Handshake} WebSocket. Este proceso se inicia con una solicitud HTTP normal al servidor que incluye el campo \textbf{Upgrade} para informar al servidor que se desea establecer una conexión WebSocket.
+\begin{lstlisting}[
+caption=Petición conexión WebSockets.]
+ GET ws://websocket.example.com/ HTTP/1.1
+ Origin: http://example.com
+ Connection: Upgrade
+ Host: websocket.example.com
+ Upgrade: websocket
+\end{lstlisting}
+Si el servidor soporta el protocolo WebSockets,lo comunica a través del campo \textbf{Upgrade} en la respuesta.
+\begin{lstlisting}[
+caption=Respuesta conexión WebSockets.]
+HTTP/1.1 101 WebSocket Protocol Handshake
+Date: Wed, 16 Oct 2013 10:07:34 GMT
+Connection: Upgrade
+Upgrade: WebSocket
+\end{lstlisting}
+Ahora que el proceso \textbf{Handshake} se ha completado, la conexión inicial de HTTP se sustituye por una conexión WebSockets que utiliza la misma conexión TCP / IP subyacente. En este punto, cualquiera de las partes puede iniciar el envío de datos.
+\subsubsection*{Librería Socket.io}
+Socket.IO\cite{socketIO} es una librería que nos facilita el desarrollo de aplicaciones utilizando Websockets en el cliente y en el servidor.A lo largo del desarrollo del TFG se utiliza para crear conexiones WebSockets.
+\\En un servidor NodeJS se utiliza la librería por medio de la sentencia \textbf{requiere()}
+\begin{lstlisting}[
+caption=Llamada libreria Socket.IO Server.]
+var io = require('socket.io')(server); 
+\end{lstlisting}
+Tras esta instancia accedemos a la conexión WebSockets por medio de \textbf{io.on('connection',function())} 
+\begin{lstlisting}[
+caption=Comprobación conexión WebSockets Server.]
+io.on('connection', function(socket) {  
+    console.log('Un cliente se ha conectado');
+});
+\end{lstlisting}
+Para el caso del cliente en el fichero HTML de proyecto se incluye el script \textbf{socket.io.js}.
+\begin{lstlisting}[
+caption=Instancia libreria Socket.IO cliente.]
+ <script src="/socket.io/socket.io.js"></script> 
+\end{lstlisting}
+Para establecer la conexión Websocket utilizamos el método \textbf{connnect} al que se le pasa la url donde se encuentra el servidor con el que se quiere establecer la conexión.
+\begin{lstlisting}[
+caption=Llamada libreria Socket.IO cliente.]
+ var socket = io.connect('http://localhost:8080');
+\end{lstlisting}
+En este punto la conexión se ha establecido por lo que si queremos enviar un mensaje \footnote{https://socket.io/} utilizamos el método \textbf{emit} que recibe el nombre del mensaje y los datos que se envian.En contrapartida el receptor del mensaje utiliza el método \textbf{on} que se define con el nombre del mensaje que esperamos recibir y un callback que se encarga de obtener los datos del mensaje
+\begin{lstlisting}[
+caption=Ejemplo Envió-Recepción mensaje con WebSockets.]
+ //cliente 
+ socket.emit('new-message', 'ola');
+ 
+ //server
+ socket.on('new-message', function(data) {  
+  console.log(data)
+ });
+
+\end{lstlisting}
+\subsection{API File}
+El tratamiento de ficheros por parte de los navegadores de forma nativa no fue posible hasta la aparición de API File\cite{APIFile}.
+\\La API requiere de una etiqueta \textit{<input>} para seleccionar el archivo con el que se quiere trabajar,a continuación JavaScript se encargara de obtener la información del documento a través del objeto 'FileReader()'.
+\begin{lstlisting}[
+caption=Ejemplo API File.]
+<!DOCTYPE html>
+<head>
+ <meta charset="utf-8">
+ <title>File API</title>
+ <script type="text/javascript">
+  function processFiles(file){
+   var files = file[0];
+   var reader = new FileReader();
+   reader.onload = function (e) {
+    /*
+     e.result tiene el resultado de la 
+     lectura del fichero
+    */
+   };
+   reader.readAsArrayBuffer(files);
+  }
+ </script>
+</head>
+<body>
+ Select a text file:
+ <input type="file" id="fileInput" onchange="processFiles(this.files)">
+</body>
+</html>
+\end{lstlisting}
+Es necesario especificar el modo en el que la API va a leer la información, a continuación se resumen los métodos disponibles.
+\begin{itemize}
+\item \textbf{reader.readAsText():} Permite leer archivos de texto y recibe dos parámetros. El primer parámetro es el objeto file o Blob que se va a leer y el segundo parámetro se utiliza para especificar la codificación del archivo.
+\item \textbf{reader.readAsDataURL():} Permite leer un File o Blob y generar una URL de datos . Esto es básicamente una cadena base64 de los datos del archivo. Se puede utilizar esta URL datos para cosas como el establecimiento de la propiedad src de una imagen.
+\item \textbf{reader.readAsBinaryString():} Permite leer cualquier tipo de archivo. El método devuelve los datos binarios sin formato.
+\item \textbf{reader.readAsArrayBuffer():} Permite leer un File o Blob y obtener como resultado un ArrayBuffer,es decir,un buffer de datos binarios de longitud fija.
+\end{itemize}
+\section{WebRTC}
+Permite configurar conexiones peer-to-peer entre navegadores web permitiendo transmitir fácilmente contenido de audio y vídeo a millones de personas.Para construir una aplicación de este tipo desde cero,seria necesario una gran cantidad bibliotecas que se ocupan de problemas típicos como la pérdida de datos, caída de conexiones y la NAT traversal pero WebRTC\cite{webRTC} incorpora de forma nativa las soluciones a estos problemas.
+\subsection{Protocolos}
+Eso También necesita ser fácilmente transportable. En pocas palabras, necesitamos un perfil basado en cadenas con
+Información sobre el dispositivo del usuario. Aquí es donde entra SDP.
+\subsubsection*{SDP}
+SDP(The Session Description Protocol) es una parte importante del WebRTC.Es un protocolo que pretende describir las sesiones de comunicación ya que no entrega los datos de los medios sino que se utiliza para la negociación de codecs de audio y vídeo, topologías de red y otra información del dispositivo.
+\\SDP es un método bien conocido para establecer conexiones con los medios de comunicación de los 90s. Se ha utilizado en una gran cantidad de otros tipos de aplicaciones antes de WebRTC como teléfono y conversaciones basadas en texto.
+\\Se pude definir SDP como una cadena de datos que contiene conjuntos de pares clave-valor, separados por saltos de línea:\textit{Key = value}.Este protocolo es la primera parte de la conexión entre nodos ya que dicha información se tiene que intercambiar por medio del canal de señalizacion para finalmente establecer la conexión, figura \ref{fig:DescripcionSDP}.
+\begin{figure}[!h]
+\begin{center}
+   \includegraphics[width=0.5\linewidth]{Figures/DescripcionSDP}
+	\decoRule
+	\caption[Ejemplo Protocolo SDP]{Ejemplo Protocolo SDP.}
+\label{fig:DescripcionSDP}
+\end{center}
+\end{figure}
+\subsubsection*{STUN}
+STUN(Session Traversal Utilities for NAT) ayuda a identificar a cada usuario y encontrar una buena conexión entre ellos. En primer lugar realiza una solicitud a un servidor, habilitado con el protocolo STUN el cual devuelve la dirección IP del cliente. 
+\\El cliente ahora puede identificarse con esta dirección IP para establecer conexión. Así que básicamente hay dos pasos que seguir, figura \ref{fig:STUN_Example}\footnote{fuente: https://www.tutorialspoint.com/webrtc/webrtc\_tutorial.pdf}.
+\begin{figure}[!h]
+\begin{center}
+   \includegraphics[width=0.3\linewidth]{Figures/STUN_Example}
+	\decoRule
+	\caption[Ejemplo petición-respuesta STUN]{Ejemplo petición-respuesta STUN.}
+\label{fig:STUN_Example}
+\end{center}
+\end{figure}
+\subsubsection*{TURN}
+En ocasiones hay un firewall que no permite ningún tráfico basado en STUN con el otro usuario. Aquí es donde TURN(Traversal Using Relays around NAT) sale como un método diferente de conectar con otro usuario.
+\\TURN funciona como un distribuidor entre los clientes. El usuario obtiene entonces sus datos del servidor TURN. A continuación, el servidor TURN obtendrá y redirigirá cada paquete de datos que se envía a él para cada usuario. Por eso, es el último recurso cuando no hay alternativas, figura \ref{fig:TURN_Example}\footnote{fuente: https://www.tutorialspoint.com/webrtc/webrtc\_tutorial.pdf}.
+\begin{figure}[!h]
+\begin{center}
+   \includegraphics[width=0.3\linewidth]{Figures/TURN_Example}
+	\decoRule
+	\caption[Ejemplo petición-respuesta TURN]{Ejemplo petición-respuesta TURN.}
+\label{fig:TURN_Example}
+\end{center}
+\end{figure}
+\subsubsection*{ICE}
+Ahora podemos ver cómo STUN y TURN se unen a través de ICE (Interactive Connectivity Establishment) para proporcionar una conexión peer to peer exitosa. ICE encuentra y prueba en orden un rango de direcciones que funcionarán para ambos usuarios.
+\\Cuando ICE comienza, no sabe nada sobre la red de cada usuario por lo que a través de un conjunto de etapas de forma incremental descubre cómo se configura la red de cada cliente. La tarea principal es encontrar suficiente información sobre cada red para poder tener éxito en la conexión.
+\\STUN y TURN se usan para encontrar a cada candidato de ICE. ICE utilizará el servidor STUN para encontrar una IP externa. Si la conexión falla, intentará utilizar el servidor TURN.
+\subsubsection*{SCTP}
+Tras establecer la conexión, tenemos la capacidad de enviar rápidamente datos de vídeo y audio. El protocolo SCTP(Stream Control Transmission Protocol) se utiliza para enviar datos(blob) en la parte superior de nuestra conexión al utilizar el objeto RTCDataChannel. SCTP se basa en el protocolo DTLS (Datagram Transport Layer Security) que se implementa para cada conexión WebRTC.Todo esto se sitúa encima del protocolo UDP que es el protocolo de transporte base para todas las aplicaciones WebRTC, figura \ref{fig:SCTP_Example}\footnote{fuente: https://www.tutorialspoint.com/webrtc/webrtc\_tutorial.pdf}.
+\begin{figure}[!h]
+\begin{center}
+   \includegraphics[width=0.4\linewidth]{Figures/SCTP_Example}
+	\decoRule
+	\caption[Capas de SCTP]{Capas de SCTP.}
+\label{fig:SCTP_Example}
+\end{center}
+\end{figure}
+\\Los desarrolladores de WebRTC sabían que cada aplicación sería única al usar el canal de datos. Algunos podrían querer el alto rendimiento de UDP, mientras que otros pueden necesitar la entrega fiable de TCP. Es por eso que se creó el protocolo SCTP que posee las siguientes características:
+\begin{itemize}
+\item Existen dos modos de transporte: fiable y no fiable.
+\item La capa de transporte está protegida
+\item Cuando se transportan mensajes de datos, se permite que se descompongan y vuelvan a montarse en el otro lado.
+\item El control del flujo y de la congestión se proporciona a través de la capa de transporte.
+\end{itemize}
+\subsection{MediaStream APIs}
+Es una API diseñada para acceder fácilmente a los flujos de datos de las cámaras y micrófonos locales. El método getUserMedia() es la forma principal para acceder al flujo de datos de los dispositivos.
+La API tiene las siguientes características:
+\begin{enumerate}
+\item Un flujo de stream en tiempo real está representado por un objeto stream en forma de vídeo o audio.
+\item Proporciona un nivel de seguridad ya que pide permiso a los usuarios para acceder a los elementos.
+\end{enumerate}
+\subsection{RTCPeerConection APIs}
+RTCPeerConection es el núcleo de la conexión peer-to-peer entre cada uno de los navegadores.Para crear el objeto RTCPeerConnection se realiza la siguiente llamada.
+\begin{lstlisting}[
+caption=Instancia RTCPeerConnection.]
+ var pc = new RTCPeerConnection(config);
+\end{lstlisting}
+Donde el argumento config contiene al menos la clave, iceServers, que es una matriz de objetos URL que contiene información sobre los servidores STUN y TURN utilizados durante la busquda de los candidatos ICE.
+\subsubsection*{Propiedades}
+\begin{enumerate}
+  \item \textbf{RTCPeerConnection.localDescription(read only):} Devuelve un objeto RTCSessionDescription que describe la sesión local.
+  \item \textbf{RTCPeerConnection.remoteDescription(read only):} Devuelve un objeto RTCSessionDescription que describe la sesión remota.
+\end{enumerate}
+\subsubsection*{Controladores de eventos}
+\begin{enumerate}
+  \item \textbf{RTCPeerConnection.onaddstream:} Se activa cada vez que se añade un objeto MediaStream por el par remoto.
+  \item \textbf{RTCPeerConnection.ondatachannel:} Se activa cuando se incluye el canal de datos en el par remoto.
+  \item \textbf{RTCPeerConnection.onicecandidate:} Se activa cuando se agrega un objeto RTCIceCandidate.
+  \item \textbf{RTCPeerConnection.onremovestream:} Se activa cuando se quita un objeto MediaStream de la conexión.
+\end{enumerate}
+\subsubsection*{Métodos}
+\begin{enumerate}
+  \item\textbf{RTCPeerConnection():} Devuelve un nuevo objeto evento RTCPeerConnection.
+  \item\textbf{RTCPeerConnection.createOffert(HandlerOffert,HandlerError,Options):} Crea una solicitud de oferta para encontrar un peer remoto. Los dos primeros parámetros de este método son los retornos de la función de éxito y error. El tercer parámetro es opcional.
+  \item \textbf{RTCPeerConnection.createAnswer(HandlerAnswer,HandlerError,Options):} Crea una respuesta a la oferta recibida por el peer remoto durante el proceso de negociación (oferta/respuesta). Los dos primeros parámetros de este método son los retornos de la función de éxito y error. El tercer parámetro es opcional.
+  \item \textbf{RTCPeerConnection.setLocalDescription():} Cambia la descripción de la conexión local.El método toma tres parámetros, el objeto RTCSessionDescription y los retornos de la función de éxito y fallo.
+  \item \textbf{RTCPeerConnection.setRemoteDescription():} Cambia la descripción de la conexión remota.El método toma tres parámetros, el objeto RTCSessionDescription y los retornos de la función de éxito y fallo.
+  \item \textbf{RTCPeerConnection.addStream():} Añade un objeto MediaStream como una fuente local de vídeo o audio.
+  \item \textbf{RTCPeerConnection.addIceCandidate():} proporciona un candidato remoto al agente ICE.
+  \item \textbf{RTCPeerConnection.createDataChannel():} crea un nuevo objeto RTCDataChannel.
+  \item \textbf{RTCPeerConnection.close():} finaliza la conexion.
+\end{enumerate}
+\subsection{RTCDataChannel APIs}
+WebRTC no sólo es bueno para transferir secuencias de audio y video, sino cualquier dato que tengamos. Aquí es donde entra en juego el objeto RTCDataChannel.
+\subsubsection*{Propiedades}
+\begin{enumerate}
+\item \textbf{RTCDataChannel.label(read only):} Devuelve el nombre del canal de datos.
+\item \textbf{RTCDataChannel.protocol(read only):} Devuelve una cadena con el nombre de subprotocolo utilizado para este canal.
+\item \textbf{RTCDataChannel.label(read only):} Devuelve el estado de la conexión. Los posibles valores:
+  \begin{itemize}
+    \item connecting: Indica que la conexión aún no está activa.
+    \item open: Indica que la conexión se está ejecutando
+    \item connecting: Indica que la conexión no se pudo establecer o se ha cerrado
+  \end{itemize}
+\end{enumerate}
+\subsubsection*{Controladores de eventos}
+\begin{enumerate}
+\item \textbf{RTCDataChannel.onopen:} Se activa cuando se ha establecido la conexión de datos.
+\item \textbf{RTCDataChannel.onmessage:} Se activa cuando está disponible un mensaje en el canal de datos.
+\item \textbf{RTCDataChannel.onclose:} Se activa cuando la conexión se ha cerrado.
+\item \textbf{RTCDataChannel.onerror:} Se activa cuando se produce un fallo.
+\end{enumerate}
+\subsubsection*{Métodos}
+\begin{enumerate}
+\item \textbf{RTCDataChannel.close():} Cierra el canal de datos.
+\item \textbf{RTCDataChannel.send():} Envía los datos pasados como parámetro a través del canal. Los datos pueden ser blob,cadenas de texto, un ArrayBuffer o un ArrayBufferView.
+\end{enumerate}
+\subsection{Servidor Señalizacion}
+Para conectarse con otro usuario debe saber la dirección IP de su dispositivo como se ha mencionado anteriormente de esta tarea se encarga RTCPeerConnection.Tan pronto como los dispositivos saben encontrarse a través de Internet, comienza el intercambio de datos sobre qué protocolos y códecs soporta cada dispositivo.
+\\El proceso de conexión con el otro usuario también se conoce como señalización y negociación. Consta de unos pocos pasos:
+\begin{enumerate}
+\item Cree una lista de candidatos potenciales para una conexión entre iguales.
+\item El usuario o una aplicación selecciona un usuario con el que establecer una conexión.
+\item La capa de señalización notifica a otro usuario que alguien quiere conectarse con él. Él puede Aceptar o rechazar.
+\item Se notifica al primer usuario la aceptación de la oferta.
+\item Ambos usuarios intercambian información de software y hardware a través del servidor de señalización.
+\item Ambos usuarios intercambian información de ubicación.
+\item La conexión tiene éxito o falla.
+\end{enumerate}
+La especificación WebRTC no contiene ningún estándar sobre el intercambio de información, así que se puede  utilizar cualquier protocolo o tecnología para crear el servidor de señalizacion, figura \ref{fig:procesoSenalizacion}.
+\begin{figure}[!h]
+\begin{center}
+   \includegraphics[width=0.5\linewidth]{Figures/procesoSenalizacion}
+	\decoRule
+	\caption[Proceso del Servidor Senalizacion]{Proceso del Servidor Senalizacion.}
+\label{fig:procesoSenalizacion}
+\end{center}
+\end{figure}
+\section{JavaScript}
+JavaScript\cite{javascript} es un lenguaje de programación que permite crear script con eventos, clases y acciones para el desarrollo de aplicaciones Internet del lado del cliente.Los usuarios no leerán únicamente las páginas sino que adquieren un carácter interactivo permitiendo cambiar las paginas dentro de una aplicación: poner botones, cuadros de texto, código para hacer una calculadora, un editor de texto, un juego, o cualquier otra cosa.
+\subsection{Propiedades}
+\begin{itemize}
+\item Se interpreta por el ordenador que recibe el programa, no se compila.
+\item Tiene una programación orientada a objetos. El código de los objetos está predefinido y es expandible. No usa clases ni herencia.
+\item El código está integrado (incluido) en los documentos HTML.
+\item No se declaran los tipos de variables.
+\item Ejecución dinámica: los programas y funciones no se chequean hasta que se ejecutan.
+\item Los programas de JavaScript se ejecutan cuando sucede un evento. 
+\end{itemize}
+\section{JQuery}
+JQuery\cite{jquery}\cite{jqueryOficial} es un framework Javascript que sirve como base para la programación avanzada  de aplicaciones del lado del cliente aportando una serie de funciones o códigos para realizar tareas habituales.
+\subsection{Características}
+\begin{itemize}
+\item efectos dinámicos.
+\item aplicaciones que hacen uso de Ajax.
+\item manipular el árbol DOM.
+\item manejo de eventos.
+\item desarrollar animaciones
+\item simplifica la manera de interactuar con los documentos HTML
+\end{itemize}
+\section{Bootstrap}
+Bootstrap\cite{bootstrap}\cite{bootstrapOfi} es un Framework (front-end) de twitter para desarrollo de aplicaciones web.Se basa en un sistema de grid de 12 columnas que escalan adecuadamente a medida que aumenta el tamaño del dispositivo o la ventana de visualización, ademas contiene elementos de diseño básicos de HTML y CSS como pueden ser barras de navegación, plantillas predefinidas, botones,desplegables entre otras extensiones de JavaScript.
+\subsection*{Características}
+\begin{itemize}
+\item Sencillo y ligero
+\item Basado en los últimos estándares de desarrollo de Web
+\item Curva de aprendizaje baja
+\item Compatible con todos los navegadores habituales
+\item Responsive web design.
+\end{itemize}
+\section{NodeJS}
+Es un proyecto creado por Ryan Dahl a principios de 2009  orientado a la creación de aplicaciones para Internet,principalmente Web.
+\\La idea empezó a gestarse a partir de otro proyecto para el framework Ruby on Rails, un pequeño y rápido servidor web llamado Ebb,que evolucionó a una librería en C.
+\\Una de las razones de la evolución del proyecto desde Ruby a C, y luego de C a JavaScript fue el objetivo de realizar un sistema en que la Entrada/Salida fuera enteramente no bloqueante que es esencial para obtener un alto rendimiento.Estos dos lenguajes presentaban una parte del sistema bloqueante pero JavaScript se ajustaba a este requisito ya que esta diseñado para ejecutarse por medio de un bucle de eventos.
+\\Si necesitamos definir a NodeJS\cite{nodejs} podemos hacer referencia a la definición que aparece en la web:\\
+\textbf{\textit{“Node.js es una plataforma construida encima del entorno de ejecución javascript
+de Chrome para fácilmente construir rápidas, escalables aplicaciones de red.
+Node.js usa un modelo de E/S no bloqueante dirigido por eventos que lo hace ligero
+y eficiente, perfecto para aplicaciones data-intensive en tiempo real”}}
+\subsection{Características}
+\subsubsection*{Fácil desarrollo y escalabilidad}
+Una de las ventajas de emplear JavaScript como lenguaje para las aplicaciones de \textit{Node} es que ,al tratarse de un lenguaje con una curva de aprendizaje pronunciada permite desarrollar aplicaciones rápidamente con solo tener unas nociones básicas de las características de este lenguaje.
+\\Uno de los aspectos con mayor impacto en cuanto a la escalabilidad es el diseño del sistema.Este es uno de los punto fuertes de \textit{Node} ya que su arquitectura y la forma de desarrollar sus aplicaciones hacen que se cumplan los principios básicos de escalabilidad, algunos ejemplos son:
+\begin{itemize}
+\item \textbf{Sin esperas:} el tiempo que un proceso espera a que un recurso esté disponible es tiempo que otro proceso no emplea para ejecutarse
+\item \textbf{Lucha por los recursos:} : \textit{Node} gestiona internamente de manera eficiente los recursos del sistema para que todas las operaciones que se demandan en el código estén satisfechas sin que se abuse de ellas.
+\end{itemize}
+\subsubsection*{E/S no bloqueante por eventos}
+Uno de los puntos críticos es el cuello de botella que afecta en alto grado al rendimiento de cualquier sistema, en especial aquellos que hacen un uso intensivo de operaciones de Entrada/Salida con ficheros y dispositivos.
+\\Para solventar este problema \textit{Node} utiliza un modelo de concurrencia basado en eventos.Las implicaciones que conlleva utilizar este modelo son las siguientes:
+\begin{itemize}
+\item Necesidad de un bucle de procesado de eventos que se tratara como un único proceso y que solo ejecutara un manejador ,o \textit{callback}, a la vez.
+\item  Emplear un lenguaje que se adapte a este modelo como es el caso de JavaScript ya que su interprete se basa un modelo idéntico.
+\end{itemize}
+\subsubsection*{Ligero y Eficiente}
+\textit{Node} es una fina capa de software entre el sistema operativo y la aplicación escrita ya que con su arquitectura se persigue velocidad y eficiencia.
+\\Centrado en este propósito descarta emplear un modelo \textit{multithead} para manejar las distintas conexiones ya que el coste es muy elevado.Se busca entonces una solución de alto rendimiento que permita realizar operaciones Entrada/Salida no bloqueantes delegando en el sistema operativo y coordinarlo a través de uno o varios bucles de eventos.
+\subsubsection*{Perfecto para aplicaciones en tiempo real}
+\textit{Node} encaja con los requisitos que exigen las aplicaciones en tiempo real flexibles.De acuerdo a su capacidad de manejar un alto numero de conexiones y procesar un enorme numero de operaciones de Entrada/Salida muy rápido se puede afirmar que \textit{Node} encaja perfectamente si se requiere:
+\begin{itemize}
+\item \textbf{Interfaces ligeros REST/JSON:} su modelo de Entrada/Salida para atender peticiones \textit{REST} junto al soporte nativo \textit{JSON} lo hacen optimo como capa superior de fuente de datos como base de datos.
+\item \textbf{Aplicaciones monopágina:} la interacción del cliente con el servidor se realiza por medio de peticiones \textit{Ajax}.El uso de \textit{Ajax} puede producir una avalancha de peticiones que el servidor tiene debe ser capas de procesar es aquí donde \textit{Node} entra en acción.
+\item \textbf{Datos por streaming:} al tratarse de conexiones HTTP como streams,permite procesar ficheros al vuelo.
+\item \textbf{Comunicación:} aplicaciones de mensajería instantánea o web en tiempo real,e incluso, juegos multijugador.
+\end{itemize}
+\section{BBDD}
+El objetivo principal de las bases de datos\cite{bbdd} es unificar los datos que se manejan y los programas o aplicaciones que los manejan. Antiguamente los programas se codificaban junto con los datos lo que desembocaba en una dependencia de los programas respecto a los datos.Además,cada aplicación utiliza ficheros que pueden ser comunes a otras sectores de la misma aplicación lo que producía redundancia en la información.
+\\Con las bases de datos,se busca independizar los datos y las aplicaciones.Los datos residen en memoria y los programas mediante un sistema gestor de bases de datos, manipulan la información. El sistema gestor de bases de datos recibe la petición por parte del programa para manipular los datos y se encarga de recuperar la información de la base de datos y devolvérsela al programa que la solicitó. 
+\\Por lo tanto una base de datos pretende conseguir a través del Sistema Gestor de Bases de Datos(SGBD):
+\begin{itemize}
+\item \textbf{Independencia de datos:} Cambios en la estructura de la Base de Datos no modifican las aplicaciones.
+\item \textbf{Integridad de los datos:} Los datos han de ser siempre correctos. Se establecen una serie de restricciones (reglas de validación) sobre los datos.
+\item \textbf{Seguridad de los datos:} Control de acceso a los datos para evitar manipulaciones no deseadas. 
+\end{itemize}
+\begin{figure}[!h]
+\begin{center}
+   \includegraphics[width=0.5\linewidth]{Figures/BBDD_Esquema}
+	\decoRule
+	\caption[Esquema Base de Datos.]{Esquema Base de Datos.}
+\label{fig:BBDD_Esquema}
+\end{center}
+\end{figure}
+\section{Web Services}
+Es un estándar de comunicación entre procesos diseñado para ser multiplataforma y multilenguaje,es decir,no importa en que lenguaje este diseñado el \textit{Web Services}\cite{webservices}, o en que plataforma se ejecuta ya que es accesible y utilizable por otras aplicaciones desarrolladas en otras plataformas o lenguajes.
+\\Antiguamente se utilizaban otros tipos de estándares como \textbf{DCOM} \textit{(Distrinuted Component Object Model)} y \textbf{CORBA} (Common Object Request Broker Architecture).Estos estándares presentaban grabes problemas de configuración en entornos que se encontraban \textit{Firewall} de por medio ya que era imposible habilitar cierto puertos por temas de seguridad.
+Por lo que se prefería utilizar el puerto 80 de \textit{HTTP},que normalmente se encontraba habilitad debido al uso de navegadores y servidores Web.De esta forma HTPP se convirtió en el protocolo preferido para el transporte de mensajes de los \textit{Web Services}.
+\subsection{Características}
+\begin{enumerate}
+\item \textbf{Combinación:} Las operaciones de un servicio web pueden utilizar otros servicios web para sus operaciones.
+\item \textbf{Patrones de comunicación}
+  \begin{itemize}
+  	\item \textbf{Petición-respuesta síncrona:} Invocamos al servicio y esperamos la respuesta a la petición.
+    \item \textbf{Comunicación asíncrona:} Se envía la petición y se continúa la ejecución.
+    \item \textbf{Mediante eventos:} El cliente se suscribe a eventos ofrecidos por el servicio.
+  \end{itemize}
+\item \textbf{Desacoplamiento:} Se refiere a minimizar las dependencias entre los servicios para ofrecer una mayor flexibilidad en la arquitectura.
+\item \textbf{Representación de mensajes}
+  \begin{itemize}
+  	\item \textbf{Textual:} SOAP representa los servicios y los mensajes en XML.
+    \item \textbf{Binario:} Los datos ocupan menos espacio aunque son ilegibles.
+  \end{itemize}
+\item \textbf{Referencia y activación del servicio:} Los servicios se referencia generalmente mediante una URL, que se conoce como punto final (endpoint).El servicio Web puede ejecutarse en la máquina de punto final, o en servidores secundarios.
+\item \textbf{Transparencia:} Protege al programador de los detalles de la representación
+de los datos y asemeja una petición local a una remota.
+\end{enumerate}
+\subsection{Tipos WebServices}
+\textbf{SOAP}\cite{tipoWebServices} (Simple Object Access Protocol) es el protocolo base de los Web Services.Este protocolo esta basado en XML y no se encuentra atado a ninguna plataforma o lenguaje de programación.
+\\Si bien es un protocolo ,este no es un protocolo de comunicación entre mensajes como lo es HTTP.Básicamente, SOAP son documentos XML que necesitan utilizar algún otro protocolo para la ser transmitidos como puede ser HTTP o cualquier otro tipo de protocolo.
+Consta de tres componentes principales:
+\begin{enumerate}
+  \item \textbf{WSDL:} lenguaje de descripción del servicio.
+  \item \textbf{HTTP/SMTP:} protocolo de comunicación.
+  \item \textbf{XML: }lenguaje de peticiones y respuestas.
+\end{enumerate}
+\textbf{REST}(Representational State Transfer) intentan emular al protocolo HTTP o protocolos similares mediante la restricción de establecer el interfaz en un conjunto conocido de operaciones estándar (por ejemplo GET, PUT,…).Por tanto, este estilo se centra más en interactuar con recursos con estado, que con mensajes y operaciones.  
+\\Cabe destacar que REST no es un estándar, ya que es tan solo un estilo de arquitectura.
+Aunque REST no es un estándar, está basado en estándares:
+\begin{itemize}
+\item HTTP
+\item URL
+\item Representación de los recursos: XML/HTML/GIF/JPEG/…
+\item Tipos MIME: text/xml, text/html, … 
+\end{itemize}
+\begin{figure}[!h]
+\begin{center}
+   \includegraphics[width=0.5\linewidth]{Figures/Soap_Rest}
+	\decoRule
+	\caption[Comparativa Soap y Rest]{Comparativa Soap y Rest.}
+\label{fig:Soap_Rest}
+\end{center}
+\end{figure}
+\subsection{WebServices Google Maps}
+En el TFG vamos a implementar el WebServices de Google Maps \footnote{Descripción WebServices: https://developers.google.com/maps/web-services/overview} que sigue la estructura REST.Consta de un conjunto de interfaces HTTP que proporcionan datos geográficos para aplicaciones que utilizan mapas.
+\\Antes de establecer la comunicación con el WebServices es necesario obtener una clave \footnote{https://developers.google.com/maps/documentation/geocode/get-api-key} asociado a la aplicación que implementa las peticiones.
+De los numerosos servicios de los que dispone nos centramos en utilizar dos.
+\begin{enumerate}
+\item \textbf{Geocode \footnote{Descripción API Geocode :https://developers.google.com/maps/documentation/geocoding/}:} permite conocer las coordenadas geograficas de un lugar a partir del nombre.La petición se realiza a la URl definida  en la que se incluye el formato de de los datos(json o xml),el dato que se envía y la clave asociada a la aplicación.
+  \begin{lstlisting}[
+  caption=Instancia RTCPeerConnection.]
+   https://maps.googleapis.com/maps/api/geocode/json?address=Madrid&key=YOUR_API_KEY
+  \end{lstlisting}
+ \item \textbf{Place \footnote{Descripción API Place :https://developers.google.com/places/web-service/search}:} permite obtener información asociada a un servicio (hoteles,restaurante,...) tomando como punto de referencia una coordenada geográfica.La petición se realiza a la URl definida en la que se incluye el formato de de los datos(json o xml),el dato que se envía y la clave asociada a la aplicación.
+\begin{lstlisting}[
+caption=Instancia RTCPeerConnection.]
+https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=-33.8670,151.1957&radius=500&types=food&key=YOUR_API_KEY
+\end{lstlisting}
+\end{enumerate} 
+\section{Framework}
+Consideremos el diseño de una aplicación Web escrita usando el estándar Common Gateway Interface (CGI), una forma popular de escribir aplicaciones Web alrededor del año 1998. En esa época, cuando escribías una aplicación CGI se desarrollaba todas las tareas por uno mismo.
+Este enfoque es valido si aplicación solo utiliza un fichero pero a medida que una aplicación Web crece este enfoque se desmorona debido a una serie de problemas:
+\begin{itemize}
+\item ¿Qué sucede cuando múltiples páginas necesitan conectarse a la base de datos? El código de conexión a la base de datos no debería estar en cada uno de los script de CGI ya que la mejor forma de hacerlo es refactorizarlo en una función compartida.
+\item ¿Qué sucede cuando este código es reutilizado en múltiples entornos, cada uno con una base de datos y contraseñas diferentes? En ese punto, se vuelve esencial alguna configuración específica del entorno.
+\item ¿Qué sucede cuando este código es reutilizado en múltiples entornos, cada uno con una base de datos y contraseñas diferentes? En ese punto, se vuelve esencial alguna configuración específica del entorno.
+\item ¿Qué sucede cuando un diseñador Web que no tiene experiencia programando y desea rediseñar la página? Lo ideal sería que la lógica de la página esté separada del código HTML de la página, de modo que el diseñador pueda hacer modificaciones sin afectar la lógica del programa.
+\end{itemize}
+Precisamente estos son los problemas que un framework Web intenta resolver. Un framework Web provee una infraestructura de programación para las aplicaciones que permite concentrarse en escribir código limpio y de fácil mantenimiento.
+\\En nuestro caso utilizamos como framework Django\cite{django}.
+\subsection{Patrón de diseño MVC}
+El diseño general de este patrón consta de los siguientes ficheros:
+\subsubsection*{Models}
+Los modelos se representan como una clase Python dentro del fichero \textit{models.py } que es independiente del motor de base de datos definido en la aplicación.
+\begin{lstlisting}[
+language=Python,
+caption=Ejemplo de un Modelo.]
+ # models.py (las tablas de la base de datos)
+ from django.db import models
+ 
+ class Artista(models.Model):
+  name = models.CharField(max_length=100,null=True)
+  videos = models.ManyToManyField(Videos) 
+  galeria = models.ManyToManyField(Imagenes)
+
+\end{lstlisting}
+Para definir cada elemento de la clase utilizamos el objeto \textit{models}\footnote{fuente: \url{https://docs.djangoproject.com/en/1.10/ref/models/fields/}} para definir el tipo de dato de cada elemento.En este punto destacamos la posibilidad de establecer relación entre los distintos modelos existentes por medio de los siguientes atributos:
+\begin{itemize}
+\item \textbf{models.ForeignKey:} relación 1 a 1.
+\item\textbf{ models.ManyToManyField:} relación 1 a n.
+\end{itemize}
+Con la información del fichero se generan tantas tablas como clases existan aunque si en un clase existe relación con otra se construye tablas intermedias.
+\subsubsection*{Vistas}
+Las vistas se representan como una función en Python dentro del fichero \textit{view.py} que contiene la lógica para interactuar con la base de datos en busca de la información solicitada y responder con el resultado.
+\begin{lstlisting}[
+language=Python,
+caption=Ejemplo de vistas.]
+ # views.py (la parte logica)
+ from django.http import HttpResponse 
+ 
+ def EventSelect(request,evento):
+  event = Evento.objects.filter(name__startswith=evento)
+  return render(request,'IndexEvent.html',{'event':event})
+    
+ def IndexView(request):
+  list_video=Videos.objects.all()
+  return render(request,'fullVideo.html',{'list_video':list_video})
+\end{lstlisting}
+Las funciones se pueden dividir en dos grupos:
+\begin{itemize}
+\item \textbf{Dinámicas:} son aquellas que reciben un parámetro adicional a través de la url configurada.
+\item \textbf{Estáticas:} son aquellas que reciben solo el parámetro request.
+\end{itemize}
+\subsubsection*{Controlador}
+El Controlador se representa como una dupla en Python dentro del fichero \textit{urls.py} que define las distintas rutas de acceso de la aplicación y su correspondiente vista asociada.
+\begin{lstlisting}[
+language=Python,
+caption=Ejemplo de url's.]
+ # urls.py (la configuracion URL)
+ from django.conf.urls.defaults import patterns, url
+ from .views import ....
+
+ urlpatterns = patterns('',
+ 	url(r'^index/$',  views.MainPage),
+	url(r'^eventos/(?P<evento>\w{1,50})/$',  views.EventSelect),
+ )
+\end{lstlisting}
+Al igual que en las vistas las URLs pueden ser de dos tipos:
+\begin{itemize}
+\item \textbf{Dinámicas:} son aquellos que incluyen un parámetro dentro del path que influye en respuesta.
+\item \textbf{Estáticas:} son aquellas definen el path con texto único.
+\end{itemize}
+\subsubsection*{Plantilla}
+Se tratan de ficheros html en que se renderiza con información de vistas correspondiente a cada petición.Para plasmar esta información utilizamos el lenguaje de plantillas\footnote{\url{https://docs.djangoproject.com/en/1.10/ref/templates/}} que es similar a un lenguaje de programación mas limitado ya que posee bucles,sentencias condicionales entre otras características.
+\begin{lstlisting}[
+language=HTML,
+caption=Ejemplo plantilla .]
+ # latest_books.html (la plantilla)
+ <!DOCTYPE html>
+ <html>
+  <head>
+   <title>Hora actual</title>
+  </head>
+  <body>
+   <h1>Bienvenidos</h1>
+    <p>Dia y hora actual: {{ fechahora\_actual }}</p>
+    {% for cantante in evento.artistas.all %}
+     <div>
+      <a href="pulpitrock.jpg" class="thumbnail">{{cantante.name}}</p></a>
+     </div>
+    {% endfor %}
+    {% block info %}
+    {% endblock %}
+  </body>    
+</html>
+ {% extends 'IndexApp.html' %}
+\end{lstlisting}
+En el lenguaje de plantillas se definen los siguientes modos de acceso:
+\begin{itemize}
+\item El contenido encerrado entre \textbf{\{\{ \}\}} muestra el valor de una variable enviada por la vista correspondiente.
+\item El contenido encerrado entre \textbf{\{\% \%\}} hace referencia a las etiquetas de plantilla permitiendo dotar a las plantillas de algún mecanismo simple de programación.
+\item Se puede establecer un bloque a través de la etiqueta \textbf{\{\% block nameseccion \%\}} y \textbf{\{\% endblock \%\}} que se utilizan al establecer herencia entre las plantillas.
+\end{itemize}
+Relacionadas en su conjunto, estas piezas se aproximan al patrón de diseño Modelo-Vista-Controlador(MVC).Este patrón permite desarrollar software en la que el código que interactua con los datos (el modelo) este separado de la asignación de rutas (el controlador) y a su vez separado del interfaz del usuario (la vista).
+\\Una ventaja clave de este enfoque es que los componentes tienen un acoplamiento débil entre sí. Eso significa que cada pieza de la aplicación Web que funciona sobre Django tiene un único propósito por lo que puede ser modificado independientemente sin afectar a las otras piezas.
+\begin{figure}[!h]
+\begin{center}
+   \includegraphics[width=0.8\linewidth]{Figures/esquemaDjango}
+	\decoRule
+	\caption[Esquema MVC Django.]{Esquema MVC Django.}
+\label{fig:esquemaDjango}
+\end{center}
+\end{figure}

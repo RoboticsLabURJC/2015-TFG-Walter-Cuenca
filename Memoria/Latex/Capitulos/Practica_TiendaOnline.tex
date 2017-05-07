@@ -1,0 +1,842 @@
+% Chapter Tienda Web
+\chapter{Tienda Web}
+\section{Enunciado}
+En la actualidad los sitios web han empezado ha tener mayor presencia en Internet debido a la versatilidad y comodidad de los servicios que ofrecen a los usuarios por ejemplo TicketMaster.com o Entradas.com permiten a los usuarios adquirir entradas a distintos eventos sin necesidad de hacerlo personalmente ademas de estos ejemplos existen otros que prestan otro tipo servicio al usuario.
+\begin{figure}[!h]    
+\centering
+\subfigure[Pagina TicketMaster.com]{\includegraphics[width=0.42\linewidth]{Figures/EjemploWeb}}\hspace{1mm}
+\subfigure[Pagina Entradas.com]{\includegraphics[width=0.42\linewidth]{Figures/EjemploWeb_2}}
+\caption{Portada Paginas Web.}
+\label{fig:Portadas_Web.}
+\end{figure}
+\\Por ello, en esta tercera practica se pide desarrollar un sitio web Full-Stack,es decir, nos encargamos de crear la capa Front-End y Back-End del proyecto y conocer como interactuan entre si estas dos capas.
+\subsection{Requisitos}
+Se presenta los distintos puntos que tiene que tiene cubrir la practica en cuando a apariencia y funcionalidad.
+\subsubsection*{Funcionalidad}
+Para gestionar el contenido de la Web sera necesario implementar como BBDD MySQL dejando de lado la BBDD de PostGrade que por defecto utiliza Django.
+\\Tras esto los usuarios tienen que tener acceso a los distintos servicios de la aplicación dentro de los cuales ser necesario hacer uso de elementos multimedia (imágenes,audio y vídeo) para enriquecer la aplicación:
+\begin{enumerate}
+  \item \textbf{Cantantes:} Se muestra información ,vídeo,discos e imágenes del cantante seleccionado.
+  \item \textbf{Eventos:} Muestra información,localización,cantantes y entradas del evento seleccionado.
+\end{enumerate}
+Ademas la aplicación tiene que ser capas de gestionar los usuarios que la visiten. Las principales funciones que tienen ser capas de gestionar son las siguientes:
+\begin{enumerate}
+  \item \textbf{Register:} Entrega un formulario al usuario para registrarse en la aplicación.
+  \item \textbf{Login:} Permite acceder al cliente siempre que se valide el contenido que rellene en el formulario de Login.
+  \item \textbf{Perfil Usuario:} Disponible para aquellos usuarios que hayan realizado el Login y debe mostrar la información que el usuario a rellenado en su registro ademas de sus compras si las realizado.
+  \item \textbf{Logout:} Permite cerrar la sesión actual del usuario.
+\end{enumerate}
+Por ultimo,es necesario proveer a la aplicación de un carrito de la compra basado en la sesión del usuario con el objetivo de tener un mecanismo de persistencia por lo que se tiene que implementar las siguientes funciones:
+\begin{enumerate}
+  \item \textbf{Detalle del contenido:} Debe mostrar el contenido del carrito en una ventana individual  donde se detalla cada uno de los productos.
+  \item \textbf{Actualizar contenido:} Se debe permitir la modificación del numero de productos añadidos.
+  \item \textbf{Eliminar contenido:} Se debe permitir eliminar un producto que seleccione el cliente.
+\end{enumerate}
+\subsubsection*{Apariencia}
+Al tratarse de una aplicación es necesario darle un aspecto ordenado y cuidado aparte de las funcionalidad que se ha descrito con anterioridad. Para facilitar esta labor y que lleve el menor tiempo posible se recomienda utilizar la librería de Boostrap.Esta librería implementa procesos de CSS3 y JS.
+\subsection{Tecnologías Necesarias}
+En el desarrollo de la practica es necesario/obligatorio que se haga uso de las tecnologías que se listan a continuación:
+\begin{enumerate}
+\item FrameWork:Django.
+\item BBDD : MySQL.
+\item Comunicación cliente-servidor(sincrono) : Formularios.
+\item Comunicación cliente-servidor(asíncrono) : Ajax.
+\item WebServices : Google Maps.
+\item Mapas Interactivos : Google Maps (JS)
+\item Boostrap
+\end{enumerate}
+\section{Desarrollo}
+El desarrollo de la aplicación se divide en los dos próximas capas \textbf{Front-End} y \textbf{Back-End} para dividir el funcionamiento de una manera mas optima y se entienda como encaja cada uno de los elementos.
+\section{Back-End}
+Esta capa de la aplicación se encarga de buscar información en la BBDD de acuerdo a las peticiones que recibe y de esta forma entregar la información a los ficheros html correspondientes para que el navegador se encargue de cargarlos.
+\\Primer vamos a instalar los controladores de MySQL que permiten a Django acceder al contenido de la BBDD así que a través de una consola ejecutamos los siguientes comandos:
+\begin{enumerate}
+\item \textbf{\textit{sudo apt -get install python-dev}}
+\item \textbf{\textit{sudo apt -get install libmysqlclient-dev}}
+\item \textbf{\textit{pip install MySQL-python}}
+\end{enumerate}
+El siguiente paso es crear la BBDD por lo que accedemos al promp de MySQL y ejecutamos \textit{\textbf{create database AppBBDD}}.Para comprobar que la BBDD se ha creado correctamente ejecutamos \textbf{\textit{show databases}} y veríamos algo parecido a la figura \ref{fig:Creacion_BBDD_APP}.
+\begin{figure}[!h]
+\begin{center}
+   \includegraphics[width=0.2\linewidth]{Figures/Create_Databases}
+	\decoRule
+	\caption[Create BBDD]{Creación de la BBDD.}
+\label{fig:Creacion_BBDD_APP}
+\end{center}
+\end{figure}
+\\Tras terminar la configuración previa de componentes externos a Django es momento de trabajar con sus componentes internos que explicamos a continuación.
+\subsection{Conexión Django-BBDD}
+La BBDD generada es AppBBDD que se incluye dentro del fichero \textbf{setting.py},permitiendo de esta forma acceder a la BBDD.
+\begin{lstlisting}[
+language=Python,
+caption= añadimos la BBDD al entorno de Django.]
+DATABASES = {'default': {
+ 'ENGINE': 'django.db.backends.mysql',
+ 'NAME': 'appBBDD',
+ 'USER':'root',
+ 'PASSWORD':'*******',
+}
+\end{lstlisting}
+\subsection{Models}
+Hasta el momento solo se ha declaro la BBDD pero es necesario crear las tablas, por lo que se generan tantas clases como sean necesario en el fichero \textbf{models.py}\footnote{Apéndice A}.
+\\Para que estos cambios sean visibles ejecutamos\textit{\textbf{'python migrate.py makemigrations'}} para migrar los cambios y \textit{\textbf{'python migrate.py migration'}} para hacerlos efectivos.
+\\Para comprobar que la creación se ha realizado correctamente consultamos la BBBDD a través del \textbf{prompt} de MySQL, figura \ref{fig:tablesAppDatabases}.
+\begin{figure}[!h]
+\begin{center}
+   \includegraphics[width=0.4\linewidth]{Figures/tablesAppDatabases}
+	\decoRule
+	\caption[Create tablas App]{Creación de tablas de la aplicación.}
+\label{fig:tablesAppDatabases}
+\end{center}
+\end{figure}
+\\Una de las ventajas que presenta Django es su capacidad de abstraer la capa de BBDD a través del interfaz admin al que se puede acceder por medio de la url \textit{\textbf{128.0.0.1:/WebMultimedia/admin/}}, donde se visualizan los modelos incluidos en el fichero \textbf{admin.py}, figura \ref{fig:Admin_Django}.
+\begin{figure}[!h]
+\begin{center}
+   \includegraphics[width=0.3\linewidth]{Figures/admin_importModels}
+	\decoRule
+	\caption[Interfaz admin Django]{Interfaz admin Django}
+\label{fig:Admin_Django}
+\end{center}
+\end{figure}
+\subsection{URL's}
+Tras terminar de configurar las tablas y accesos a la BBDD es necesario definir las distintas URLs a las que los usuarios tendrán acceso. Para ello incluimos los valores de las URLs dentro del fichero\textit{ \textbf{urls.py}} en forma de dupla.El primer elemento indica el path que puede contener parámetros que serán utilizaran posteriormente y el segundo elemento indica la vista que trata la petición.
+\begin{lstlisting}[
+language=Python,
+caption= Definicion de las Url's del proyecto.]
+ urlpatterns = [
+    url(r'^$',views.PageInit),
+    url(r'^Cantantes/(?P<idCantante>[0-9]+)/$',views.PageCantante),
+    url(r'^Eventos/(?P<idEvento>[0-9]+)/$',views.PageEvent),
+    url(r'^Search/$',views.SearchItem),
+    url(r'^WebServRequest/$',views.WSRequest),
+    url(r'^WebServInfoSite/$',views.WSRequestSite),
+    url(r'^Contacta/$',views.PageContact),
+    url(r'^Register/$',views.PageRegister),
+    url(r'^Login/$',views.PageLogin),
+    url(r'^Perfil/$',views.PagePerfil),
+    url(r'^Logout/$',views.PageLogout),
+    url(r'^AddCar/(?P<idEvento>[0-9]+)/(?P<idTicket>[0-9]+)/$',views.AddCarShop),
+    url(r'^UpdateCart/(?P<idEvento>[0-9]+)/(?P<idTicket>[0-9]+)/$',views.UpdateCart),
+    url(r'^RemoveCart/(?P<idEvento>[0-9]+)/(?P<idTicket>[0-9]+)/$',views.deleteItemCar),
+    url(r'^DetailCar/$',views.DetailCarShop),
+    url(r'^Checkout/$',views.Pagecheckout),
+]
+\end{lstlisting}
+Por necesidades del proyecto es necesario definir \textbf{\textit{URL's estáticas}}, aquellas que son independientes del elemento seleccionado por el usuario, ejemplo \textbf{\textit{'URL(r'\^register\/', views.PageRegister), '}} y \textbf{\textit{url's dinamicas}} aquellas que depende del elemento seleccionado ya que el parámetro forma parte de la url ,ejemplo \textbf{xxxxxx}.
+\subsection{Formularios}
+Para gestionar o validar información enviada por los usuarios es necesario utilizar formularios por lo generamos el fichero \textit{\textbf{forms.py}} que contiene la clase de los formularios que utilizamos a lo largo de la aplicación.
+\subsubsection*{Register}
+La clase \textit{\textbf{RegisterForm(forms.Form)}} define los campos utilizados en el registro de los usuarios.
+\begin{lstlisting}[
+language=Python,
+caption= Campos del formulario de Registro.]
+ class RegisterForm(forms.Form):
+  typeSexo = (
+   ('M','Mujer'),
+   ('H','Hombre'),
+  )
+  nick=nombre=forms.CharField()
+  correo=forms.EmailField(required=True)
+  nombre=forms.CharField()
+  apellido=forms.CharField()
+  password=forms.CharField(widget=forms.PasswordInput())
+  password2=forms.CharField(widget=forms.PasswordInput())
+  telefono=forms.IntegerField()
+  direccion=forms.CharField()
+  sexo=forms.ChoiceField(widget=forms.RadioSelect, choices=typeSexo)
+  edad=forms.IntegerField()
+  pais=forms.CharField()
+  provincia=forms.CharField()
+\end{lstlisting}
+\subsubsection*{Login}
+La clase \textit{\textbf{LoginForm(forms.Form)}} define los campos utilizados al realicen Login por los usuarios .
+\begin{lstlisting}[
+language=Python,
+caption= Campos del formulario de Login.]
+ class LoginForm(forms.Form):
+  nick=forms.CharField()
+  password=forms.CharField(widget=forms.PasswordInput())
+\end{lstlisting}
+\subsubsection*{Contacta}
+La clase \textit{\textbf{ ContactaForm(forms.form)}} define los campos que se utiliza cuando un usuario necesite enviar un mensaje a la aplicación pidiendo información.
+\begin{lstlisting}[
+language=Python,
+caption= Campos del formulario de Contacto.]
+class ContactaForm(forms.Form):
+ typeArea = (
+  ('Compra','Compra'),
+  ('Tecnica','Tecnica'),
+  ('Eventos','Eventos'),
+  ('Otros','Otros'),
+  )
+  nombre=forms.CharField()
+  correo=forms.EmailField(required=True,label='Correo electronico')
+  numeroTlf=forms.IntegerField(label='Numero telefono')
+  area=forms.ChoiceField(widget=forms.RadioSelect, choices=typeArea)
+  motivo=forms.CharField(widget=forms.Textarea)
+\end{lstlisting}
+\subsubsection*{SelecItem}
+La clase \textit{\textbf{itemsCountsForm(forms.Form)}} permite al usuario seleccionar el numero de productos que quiere adquirir.
+\begin{lstlisting}[
+language=Python,
+caption= Campos del formulario de numero de productos.]
+ class itemsCountsForm(forms.Form):
+ PRODUCT_QUANTITY_CHOICES = [(i, str(i)) for i in range(1, 21)]
+ quantity =
+ forms.TypedChoiceField(label='Num.Entradas',
+   choices=PRODUCT_QUANTITY_CHOICES,coerce=int)
+ update = forms.BooleanField(required=False,initial=False,widget=forms.HiddenInput)
+\end{lstlisting}
+\subsubsection*{OrdenCompra}
+La clase \textit{\textbf{OrdenForm(forms.ModelForm)}} define un formulario a partir de un modelo,es decir,el formulario esta formado por campos del modelo en este caso \textbf{OrdenModel}.
+\begin{lstlisting}[
+language=Python,
+caption= Campos del formulario de Ordenes.]
+ class OrdenForm(forms.ModelForm):
+  class Meta:
+   model = Order
+   fields = '__all__'
+\end{lstlisting}
+\subsection{Vistas}
+Pasamos al ultimo componente que se encarga de interactuar con la BBDD para cada una de las peticiones que recibe el servidor y de esta forma guardar y obtener la información que se solicita, a continuación explicamos en detalle cada una las vistas implementadas.
+\subsubsection*{Página principal}
+La función \textit{\textbf{PageInit(request)}} devuelve la información de la pagina principal de la Web.Realiza una búsqueda dentro de la tabla de Eventos y Artistas  filtrando el contenido por la fecha de inserción ya que nos interesa solo los elementos que se han introducido en los últimos 15 días y enviamos la información al fichero \textbf{esqueletoWeb.html}.
+\begin{lstlisting}[
+language=Python,
+caption= Vista pagina principal.]
+ def PageInit(request):
+  dateTimerHoy = datetime.datetime.now()
+  dateTimerPass = datetime.datetime.now()
+  date=dateTimerPass.date();
+  numDias = datetime.timedelta(days=15);
+  datePass=dateTimerHoy-numDias
+  list_NewVideos=Video.objects.filter(fechaModif__range=[datePass, dateTimerHoy])
+  list_NewEvento=Evento.objects.filter(fechaModif__range=[datePass, dateTimerHoy])
+  list_NewCantante=Cantante.objects.filter(fechaModif__range=[datePass, dateTimerHoy])
+  context = {
+  'eventos':list_NewEvento,
+  'cantantes':list_NewCantante
+  }
+  return render(request, 'esqueletoWeb.html', context) 
+\end{lstlisting} 
+\subsubsection*{Eventos}
+La función \textbf{\textit{pageEvent(request,idEvento)}} recibe como parámetro el identificador del evento seleccionado con el que se realiza un filtrando en la tabla Eventos para obtener la información solicitada y enviarla  al fichero \textbf{Evento.html}.
+\begin{lstlisting}[
+language=Python,
+caption=Vista de la pagina de Eventos.]
+ def PageEvent(request,idEvento):
+  eventSelec = Evento.objects.get(id=idEvento)
+  formCantidad = itemsCountsForm()
+  context = {'evento':eventSelec,'form':formCantidad}
+  return render(request, 'Evento.html', context)
+\end{lstlisting}
+\subsubsection*{Artista}
+La función \textbf{\textit{PageCantante(request,idArtista)}} recibe como parámetro el identificador del cantante seleccionado con el que se realiza un filtrando en la tabla Artistas para obtener la información solicitada y enviarla  al fichero \textbf{Artista.html}.
+\begin{lstlisting}[
+language=Python,
+caption=Vista pagina de Artista.]
+ def PageCantante(request,idCantante):
+  cantanteSelec = Cantante.objects.get(id=idCantante)
+  context = {'cantanteSelec':cantanteSelec}
+  return render(request, 'Artista.html', context)
+\end{lstlisting}
+\subsubsection*{Contacta} 
+La función \textbf{\textit{'PageContact(request)'}} se encarga de tratar las peticiones de información que el usuario realiza. Para ello,la función evalúa primero el método de la petición ya que si es \textbf{GET} genera una instancia de \textit{\textbf{ContactaForm()}} mientras que si es \textbf{POST} se obtiene la información del cuerpo del mensaje y genera con ella una instancia \textbf{\textit{ContactaForm()}} por medio de la cual valida que los campos sean correctos a través del método \textbf{is\_valid()}.
+\\Si el método es valido se crea un nuevo elemento en la tabla \textbf{Contacta} con la información anterior en caso contrario se informa del error.
+\begin{lstlisting}[
+language=Python,
+caption=Vista Petición del contacta.]
+ def PageContact(request):
+  if request.method == 'POST':
+   formContacta = ContactaForm(request.POST)
+   if formContacta.is_valid():
+    usuario = formContacta.cleaned_data['nombre']
+    email = formContacta.cleaned_data['correo']
+    tlf = formContacta.cleaned_data['numeroTlf']
+    area = formContacta.cleaned_data['area']
+    motivo = formContacta.cleaned_data['motivo']
+    newContact = Contacta(nombre=usuario,email=email,telefono=tlf,motivo=area,texto=motivo);
+    newContact.save()
+    return HttpResponseRedirect('/WebMutimedia/')
+   else:
+    contacta = ContactaForm()
+    context = {
+     'form':contacta
+    }
+    return render(request, 'contacta.html', context)
+\end{lstlisting}
+\subsubsection*{Buscador} 
+La función \textit{\textbf{SearchItem(request)}} realiza una búsqueda dentro de las tablas de Eventos y Cantantes con la información que el usuario envía en el cuerpo de la petición y envía el resultado al fichero \textbf{desplegable.html}
+\begin{lstlisting}[
+language=Python,
+caption=Vista Buscador.]
+ def SearchItem(request):
+  text= request.POST['textRequest']
+  infoCantante=Cantante.objects.filter(nombre__startswith=text)
+  infoEvento=Evento.objects.filter(nombre__startswith=text)
+  contexto={'ListEvento':infoEvento,
+   'ListCantante':infoCantante
+  }
+  return render(request,'desplegable.html',contexto)
+\end{lstlisting}
+Las próximas dos vistas realizan peticiones al WebServices de Google Maps por lo que es
+necesario instalar el modulo resp de Python por medio de \textit{\textbf{'pip install resp'}}. En cada petición se utiliza el método \textit{\textbf{response.get(url,data)}} que recibe como parámetro la url donde se encuentra localizado el servicio web y los datos de consulta.
+\subsubsection*{Geolocalización} 
+La función \textbf{\textit{WSRequest(request)}} se encarga de realizar la petición al WS sobre la geolocalizacion de un determinado lugar que se recupera del cuerpo de la petición con el que compone la url de la petición.
+\begin{lstlisting}[
+language=Python,
+caption=Vista de Geolocalización.]
+ def WSRequest(request):
+  nameSite= request.POST['site']
+  r = requests.get('https://maps.googleapis.com/maps/api/geocode/json?address='+nameSite+'&key=AIzaSyBliq3S6sQ0pJsT1xWJDiMtPuM1sn9xzaM')
+  return HttpResponse(r.text)
+\end{lstlisting}
+La respuesta del WebServices la obtiene el servidor por medio del método \textbf{\textit{resp.text}} cuyo formato se ve en la figura \ref{fig:ResponseWS_Site}.
+\begin{figure}[!h]
+\begin{center}
+   \includegraphics[width=0.4\linewidth]{Figures/swResponse_Site}
+	\decoRule
+	\caption[Respuesta WebServices Geolocalizacion]{Respuesta WebServices Geolocalizacion lugar.}
+\label{fig:ResponseWS_Site}
+\end{center}
+\end{figure}
+\subsubsection*{Localización de Servicios} 
+La función \textit{\textbf{WSRequestSite(request)}} se encarga de realizar otra petición al WS sobre la localización de servicios alrededor de un punto.Para realizar esta consulta obtiene del cuerpo del mensaje las coordenadas y el servicio para componer la url de la petición.
+\begin{lstlisting}[
+language=Python,
+caption=Vista búsqueda de servicios.]
+ def WSRequestSite(request):
+  infoSite= request.POST['infoSite']
+  r = requests.get('https://maps.googleapis.com/maps/api/place/nearbysearch/json?'+infoSite+'&key=AIzaSyBliq3S6sQ0pJsT1xWJDiMtPuM1sn9xzaM')
+  return HttpResponse(r.text)
+\end{lstlisting}
+El servidor obtiene la respuesta por medio del método \textit{\textbf{resp.text}} cuyo formato se ve en la figura \ref{fig:ResponseWS_MoreSite} y finalmente se envía al navegador.
+\begin{figure}[!h]
+\begin{center}
+   \includegraphics[width=0.8\linewidth]{Figures/swResponse_ServicesSite}
+	\decoRule
+	\caption[Respuesta WebServices Servicios]{Respuesta WebServices Servicios Adicionales}
+\label{fig:ResponseWS_MoreSite}
+\end{center}
+\end{figure}
+\\Otro punto a tener en cuenta es la gestión de los usuarios de la aplicación ,por lo que se definen las siguientes vistas.
+\subsubsection*{Register}
+La función \textit{\textbf{PageRegister(request)}} gestiona el registro de los usuarios dentro de la BBDD de la aplicación.La función evalúa el método de la petición ya que si es \textit{\textbf{GET}} crea una instancia del formulario \textit{\textbf{registerForm()}} mientras que si es  \textit{\textbf{POST}} se obtiene los datos del cuerpo de la petición para crear la instancia del formulario \textit{\textbf{registerForm()}} y validar la información por medio el método \textbf{is\_valid()} para poder generar un nuevo elemento en la tabla User y UserProfile.
+\begin{lstlisting}[
+language=Python,
+caption=Vista de registro de usuarios.]
+ def PageRegister(request):
+  if request.method == 'POST':
+   formRegister = RegisterForm(request.POST)
+   if formRegister.is_valid():
+    #datos que guardamos en tabla User
+    usuario = formRegister.cleaned_data['nick']
+    email = formRegister.cleaned_data['correo']
+    nombre = formRegister.cleaned_data['nombre']
+    apellido = formRegister.cleaned_data['apellido']
+    password = formRegister.cleaned_data['password2']
+    password2 = formRegister.cleaned_data['password2']
+    #guardamos el usuario
+    newUser = User.objects.create_user(username=usuario,email=email,
+      password=password,first_name=nombre,last_name=apellido)
+    newUser.save()
+    #datos que se guardaran en el perfil del User
+    edad = formRegister.cleaned_data['edad']
+    tlf = formRegister.cleaned_data['telefono']
+    direccion = formRegister.cleaned_data['direccion']
+    sexo = formRegister.cleaned_data['sexo']
+    pais = formRegister.cleaned_data['pais']
+    provincia = formRegister.cleaned_data['provincia']
+    perfilNewUser = PerfilUser(usuario=newUser,telefono=tlf,
+      direccion=direccion,sexo=sexo,pais=pais,provincia=provincia,edad=edad)
+    perfilNewUser.save()
+	return HttpResponseRedirect('/WebMutimedia/')
+  else:
+   register = RegisterForm()
+   context = { 'form':register }
+   return render(request,'register.html',context)
+\end{lstlisting}
+\subsubsection*{Login}
+La función \textit{\textbf{PageLogin(request)}} validar que el username y contraseña que el usuario ha introducido son correctas y existe dentro de la BBDD. La información se obtiene del cuerpo de la petición para crear una instancia del formulario \textbf{\textit{loginForm()}} y validar con el método \textit{\textbf{'autenticathe()'}} que el usuario existe en el sistema. Si la autenticación es correcta logeamos al cliente con  método \textit{\textbf{login()}} en caso contrario informamos que este proceso no ha funcionado correctamente.
+\begin{lstlisting}[
+language=Python,
+caption=Vista de login usuarios.]
+ def PageLogin(request):
+  if request.method == 'POST':
+   user = request.POST['usuario']
+   passw = request.POST['pass']
+   data = {'nick': user, 'password': passw}
+   Formlogin = LoginForm(data)
+   if Formlogin.is_valid():
+    user = Formlogin.cleaned_data['nick']
+    password = Formlogin.cleaned_data['password']
+    usuario = authenticate(username=user,password=password)
+    if usuario is None:
+     mensaje = False
+     return  HttpResponse(mensaje)
+    else:
+     mensaje = True
+     login(request, usuario)
+     return HttpResponse(mensaje)	
+\end{lstlisting}
+\subsubsection*{Perfil Usuario}
+La función \textit{\textbf{PageProfile(request)}} busca el perfil del usuario por medio del \textbf{username} que se encuentra como parámetro de la variable \textbf{request}.
+\\Con el nombre realizamos una búsqueda dentro de la tabla User para obtener el id del cliente y de esta forma obtener el perfil en la tabla ProfileUser y enviar esta información al fichero \textbf{profile.html}.
+\begin{lstlisting}[
+language=Python,
+caption=Peticiones de añadir productos.]
+ def AddCarShop(request,idEvento,idTicket):
+  numEntradas = request.POST['quantity']
+  v_Evento = Evento.objects.get(id=idEvento)
+  ticket = Entradas.objects.get(id=idTicket)
+  precio = ticket.precio
+  tipoTicket = ticket.tipoEntrada
+  Total = int(numEntradas)*precio
+  cart = CartShop(request)
+  cart.add(v_Evento.nombre,str(v_Evento.imgCartel),
+    idTicket,tipoTicket,numEntradas,Total)
+  return HttpResponseRedirect('/WebMutimedia/Eventos/'+idEvento+'/')
+\end{lstlisting}
+\subsubsection*{Logout}
+La función \textit{\textbf{appLogout(request)}} se encarga de cerrar la sesión actual del usuario a través del método \textit{\textbf{logout(request)}} y redirecciona a la pagina principal de la aplicación.
+\begin{lstlisting}[
+language=Python,
+caption=Vista Logout usuario.]
+ def appLogout(request){
+  logout(request)
+  return HttpResponseRedirect('/WebMutimedia/')
+ }
+\end{lstlisting}
+Para finalizar esta sección creamos una serie de vistas que encargan de gestionar los productos que los usuarios desean adquirir durante su estancia en la aplicación.
+\subsubsection*{Añadir}
+La función \textit{\textbf{AddCarShop(request,idEvento,idTicket)}} recibe como parámetro el id del Evento y el de la entrada para realizar una búsqueda dentro la tabla Entradas y Eventos ademas de obtener el numero de entradas del cuerpo de la petición.
+\\Con la información obtenida de la entrada y el numero de entradas calculamos el precio total para guardarlo posteriormente.Para finalizar el proceso realiza una instancia del objeto \textit{\textbf{CartShop()}} y guardamos el producto a través del método \textit{\textbf{addCart(name,linkImg,type\-Ticket,unidades,precio)}} al que se le pasan los siguientes parámetros :
+\begin{itemize}
+  \item \textbf{Name:} nombre del evento.
+  \item \textbf{LinkImg:} imagen del evento.
+  \item \textbf{TypeTicket:} tipo de entrada.
+  \item \textbf{Unidades}: numero de entradas.
+  \item \textbf{Precio:} valor de la compra.
+\end{itemize}
+\begin{lstlisting}[
+language=Python,
+caption=Vista añadir productos carrito.]
+ def AddCarShop(request,idEvento,idTicket):
+  numEntradas = request.POST['quantity']
+  v_Evento = Evento.objects.get(id=idEvento)
+  ticket = Entradas.objects.get(id=idTicket)
+  precio = ticket.precio
+  tipoTicket = ticket.tipoEntrada
+  Total = int(numEntradas)*precio
+  cart = CartShop(request)
+  cart.add(v_Evento.nombre,str(v_Evento.imgCartel),
+    idTicket,tipoTicket,numEntradas,Total)
+  return HttpResponseRedirect('/WebMutimedia/Eventos/'+idEvento+'/')
+\end{lstlisting}
+\subsubsection*{Detalle}
+La función \textit{\textbf{DetailCarShop(request)}} se encarga de mostrar el contenido que el usuario tiene en su carrito. Para ello realizamos una instancia del objeto \textit{\textbf{'CartShop(request)'}} y del formulario \textit{\textbf{itemsCountForm()}} que se utiliza para que el usuario pueda actualizar el numero de entradas que tiene en su carrito y enviarlo al fichero \textbf{CartDetail.html}.
+\begin{lstlisting}[
+language=Python,
+caption=Vista detalle contenido carrito.]
+ def DetailCarShop(request):
+  objCart = CartShop(request)
+  formCantidad = itemsCountsForm(initial={'update': True})
+  context = {'objCart':objCart,'formCantidad':formCantidad}
+  return render(request,'CartDetail.html',context)
+\end{lstlisting}
+\subsubsection*{Update}
+La función \textbf{\textit{UpdateCart(request,idEvento,idTicket)}} recibe como para parámetro el idEvento y el idTicket además del nuevo numero de entradas del cuerpo de la petición.
+\\Con la información buscamos dentro de la tabla Eventos y Entradas. Tras esto vuelve a calcular el precio con el numero de entradas y el precio de la entrada con la información obtenida de la consulta anterior y genera una instancia del objeto \textit{\textbf{'CartShop(request)'}} del cual utilizamos el método \textit{\textbf{getNameKey(nameEveto,idTicket)}} para obtener el nombre de la clave donde se encuentra el antiguo valor del objeto y así utilizar el método  \textit{\textbf{update(cantidad,precio,key)}} para finalizar la actualización del contenido y redireccionar a \textit{\textbf{'/WebMutimedia/DetailCar/'}}.
+\begin{lstlisting}[
+language=Python,
+caption=Vista actualizar contenido del carrito.]
+ def UpdateCart(request,idEvento,idTicket):
+  newNumEntradas = request.POST['quantity']
+  ticket = Entradas.objects.get(id=idTicket)
+  v_Evento = Evento.objects.get(id=idEvento)
+  Total = int(newNumEntradas)*ticket.precio
+  #SIguiente pasamos a encontrar la clave 
+  instCart = CartShop(request)
+  nameKey = instCart.getNameKey(v_Evento.nombre,idTicket)
+  instCart.update(nameKey,newNumEntradas,Total)
+  return HttpResponseRedirect('/WebMutimedia/DetailCar/')
+\end{lstlisting}
+\subsubsection*{Remove}
+La función \textit{\textbf{deleteItemCar(request,idEvento,idTicket)}} recibe como parámetro el idEvento y el idTicket.En este caso se realiza una instancia del objeto \textit{\textbf{'CartShop(request)'}} del cual utilizamos el método \textit{\textbf{getNameKey(nameEveto,idTicket)}} para obtener el nombre de la clave asociada al objeto y así poder eliminarlo por medio del método \textit{\textbf{'remove(key)'}}  y redireccionar a \textit{\textbf{/WebMutimedia/DetailCar/}}.
+\begin{lstlisting}[
+language=Python,
+caption=Vista eliminar producto del carrito.]
+ def deleteItemCar(request,idEvento,idTicket):
+  instCart = CartShop(request)
+  v_Cart = instCart.cart
+  v_Evento = Evento.objects.get(id=idEvento)
+  nameKey = instCart.getNameKey(v_Evento.nombre,idTicket)
+  instCart.remove(nameKey)
+  return HttpResponseRedirect('/WebMutimedia/DetailCar/')
+\end{lstlisting}
+
+\section{Front-End}
+Esta capa de la aplicación se encarga de generar ficheros html por medio del lenguaje de plantillas de Django y de esta forma cargar la información que envía el servidor.
+\\Definimos el fichero \textit{\textbf{'esqueletoWeb.html'}} \footnote{Apéndice 3} como el fichero raíz de la aplicación ya que contiene los elementos comunes entre las plantillas con el fin de no repetir código y hacer uso de la herencia entre plantillas, ademas se define los siguientes bloques dentro del fichero que permiten sustituir o introducir nueva información.
+\begin{itemize}
+\item {\% block JS \%}: bloque para incrustar scripts.
+\item {\% block css \%}: bloque para incrustar ficheros de estilos.
+\item {\% block body \%}: bloque para incluir el cuerpo de la pagina correspondiente.
+\end{itemize}
+Ahora pasamos a detallar el contenido de cada una de las plantillas que utiliza la aplicación y su funcionalidad de la misma forma de un ejemplo de la apariencia que tiene una vez las ha cargado el navegador.
+\subsection{Barra de Navegación}
+Es el elemento principal ya que en el se encuentran los distintos accesos a las ventas de la aplicación.Muestra un  desplegable de Cantantes a través de la variable \textbf{listCantantes} y de Eventos a través de la variable \textbf{listFestivales}. Ademas de esto incluye los siguientes enlaces:
+\begin{enumerate}
+\item Contacta
+\item Register
+\item Login
+\item Perfil
+\end{enumerate}
+Por ultimo, tiene un enlace al detalle del carrito de la compra en que se muestra el numero de elementos por medio la variable \textbf{items} y el total de la compra por medio de la variable \textbf{precio},imagen \ref{fig:Nav_Bar}.
+\begin{figure}[!h]
+\begin{center}
+   \includegraphics[width=0.9\linewidth]{Figures/Nav}
+	\decoRule
+	\caption[Barra de navegación]{Barra de navegación.}
+\label{fig:Nav_Bar}
+\end{center}
+\end{figure}
+\subsubsection*{Buscador}
+Permite a los usuarios buscar cantantes o eventos introduciendo la cadena de caracteres en el buscador obteniendo como resultado un desplegable con las coincidencias encontradas, figura \ref{fig:Search_Bar}.
+\begin{figure}[!h]
+\begin{center}
+   \includegraphics[width=0.7\linewidth]{Figures/Bar_Navegacion}
+	\decoRule
+	\caption[Buscador de la aplicación]{Buscador de la aplicación.}
+\label{fig:Search_Bar}
+\end{center}
+\end{figure}
+\\\underline{\textbf{Funcionalidad:}}Para establecer la conexión con el servidor y enviar la cadena de caracteres creamos la función \textbf{sendInfo()} que recupera la información introducida por el usuario y valida su longitud ya que tiene que ser mayor a dos caracteres para realizar una búsqueda correcta.
+\\Tras la validación realizamos una llamada Ajax a la url \textit{\textbf{'/WebMutimedia/Search/'}} por medio de la función \textbf{'AjaxRequest(data)'}.
+\begin{lstlisting}[
+caption=Petición Ajax buscador aplicación.]
+function sendInfo(){
+  texto = $('#textSearch').val();
+  console.log(texto);
+  if(texto.length > 2){
+    AjaxRequest(texto);
+  }else{
+    $("table#tbSearch").remove();
+  }
+}
+
+function AjaxRequest(data){
+  console.log(data);
+  $.ajax({ 
+    type: "POST",
+    url:'/WebMutimedia/Search/',
+    data: {
+      'textRequest' : data,
+      'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val(),
+    },
+    success: resulSearch,
+    dataType: 'html',
+  });
+}
+\end{lstlisting}
+La función \textbf{resulSearch(data, textStatus, jqXHR)} definida en la petición se encarga de recibir la respuesta e insertarla en la pagina.
+\begin{lstlisting}[
+caption=Respuesta Ajax buscador aplicación.]
+function resulSearch(data, textStatus, jqXHR){
+    console.log(data);
+    $('#listSearch').html(data);
+}
+\end{lstlisting}
+\subsubsection*{Contacta}
+Al acceder a este enlace se redirecciona a la url \textbf{\textit{'/WebMutimedia/Contacta'}} que muestra la información de la variable \textbf{form} en el fichero \textbf{'Contacta.html'} \footnote{Apéndice 3: Contacta}, figura \ref{fig:Form_Contacta}.
+\begin{figure}[!h]
+\begin{center}
+   \includegraphics[width=0.5\linewidth]{Figures/Contacta}
+	\decoRule
+	\caption[Pagina Contacta]{Pagina Contacta.}
+\label{fig:Form_Contacta}
+\end{center}
+\end{figure}
+\subsubsection*{Register}
+Al acceder a este enlace se redirecciona a la url \textbf{\textit{'/WebMutimedia/Register'}} en que se muestra la información de la variable \textbf{form} en el fichero \textbf{'Register.html'} \footnote{Apéndice 3: Register}, figura \ref{fig:Form_Register}.
+\begin{figure}[!h]
+\begin{center}
+	\includegraphics[width=0.5\linewidth]{Figures/Register}
+	\decoRule
+	\caption[Pagina Registro]{Pagina Registro.}
+\label{fig:Form_Register}
+\end{center}
+\end{figure}
+\subsubsection*{Login}
+Al pulsar sobre el enlace generamos un formulario que tiene como campos el nombre de usuario y password para enviar la información a la url\textit{\textbf{ '/WebMultimedia/Login'}} y validar el contenido.
+\begin{lstlisting}[
+language=HTML,
+caption=Petición eliminar producto del carrito.]
+ <form  id="post_form" method="POST">
+  {% csrf_token %}
+  <div class="form-group">
+   <p id="login_error" style="position: center"></p>
+   <label for="usrname"><span class="glyphicon glyphicon-user"></span> Username</label>
+   <input type="text" class="form-control" id="usrname" placeholder="Enter Username">
+  </div>
+  <div class="form-group">
+   <label for="psw"><span class="glyphicon glyphicon-eye-open"></span> Password</label>
+   <input type="password" class="form-control" id="psw" placeholder="Enter password">
+  </div>
+  <button type="submit" class="btn btn-success btn-block"><span class="glyphicon glyphicon-off"></span>
+  Login</button>
+ </form>
+\end{lstlisting}
+Una vez el navegador termina de cargar el fichero y al acceder al enlace se obtiene como resultado la figura \ref{fig:Form_Login}.
+\begin{figure}[!h]
+\begin{center}
+   \includegraphics[width=0.5\linewidth]{Figures/Login}
+	\decoRule
+	\caption[Formulario Login]{Formulario Login.}
+\label{fig:Form_Login}
+\end{center}
+\end{figure}
+\subsubsection*{Perfil}
+Al acceder a este enlace se redirecciona a la url \textbf{\textit{'/WebMutimedia/Perfil'}} en que se muestra la información de la variable \textbf{ProfileUser} en el fichero \textbf{'perfil.html'}\footnote{Apéndice 3: Perfil} que consta de la información del usuario durante el proceso de registro y las compras que ha realizado en la aplicación .
+\begin{figure}[!h]
+\begin{center}
+   \includegraphics[width=0.5\linewidth]{Figures/ProfileUser}
+	\decoRule
+	\caption[Perfil Usuario]{Pagina Perfil Usuario.}
+\label{fig:Perfil_user}
+\end{center}
+\end{figure}
+\subsubsection*{Logout}
+Al acceder a este enlace se redirecciona a la url \textbf{\textit{'/WebMultimedia/Logout'}} para finalizar el sesión del usuario.
+\subsubsection*{Resumen Compra}
+Es necesario disponer de una zona en la que se muestre el numero y el precio total de los productos que el cliente ha añadido a el carrito este punto se desarrolla en detalle mas adelante.
+\subsection{Home}
+La pagina principal de la aplicación consta de un carrusel de imágenes que se cargan de forma estática y de una sección de novedades de cantantes y eventos añadidos en los últimos 15 días por medio de las variables \textbf{'lCantantes'} y \textbf{'lEventos'} respectivamente \footnote{Apéndice 3:Home}, figura \ref{fig:Page_Home}.
+\begin{figure}[!h]
+\begin{center}
+   \includegraphics[width=0.5\linewidth]{Figures/HomePage}
+	\decoRule
+	\caption[Pagina Principal]{Pagina Principal.}
+\label{fig:Page_Home}
+\end{center}
+\end{figure}
+\subsection{Cantantes} 
+El usuario selecciona un cantante del desplegable provocando la redireccion a la url \textit{\textbf{'/WebMultimedia/Cantante/idCantante/'}}, donde \textbf{idCantante} corresponde al identificador del cantante dentro de la tabla \textbf{Cantante}.
+\\La información se vuelca en el fichero \textbf{'Cantante.html'} \footnote{Apéndice 3:Cantante} que consta de cuatro secciones,que se explican a continuación.
+\subsubsection*{Información}
+La información correspondiente a la tabla Cantante se vuelca en esta sección a través de la variable \textbf{cantanteSelec} que contiene la información enviada por el servidor y se distribuye dentro del panel, figura \ref{fig:Info_Cantante}.
+\begin{figure}[!h]
+\begin{center}
+   \includegraphics[width=0.5\linewidth]{Figures/init_Cantante}
+	\decoRule
+	\caption[Cantante panel Información]{Pagina Cantante panel Información.}
+\label{fig:Info_Cantante}
+\end{center}
+\end{figure}
+\subsubsection*{Vídeos}
+La información correspondiente a la tabla Vídeo en relación al cantante seleccionado se vuelca en esta sección a través de la variable \textbf{cantanteSelec.listVideos} que se distribuye dentro del panel creando una lista  y la correspondiente zona de reproducción, figura \ref{fig:Video_Cantante}.
+\begin{figure}[!h]
+\begin{center}
+   \includegraphics[width=0.5\linewidth]{Figures/videos_Cantante}
+	\decoRule
+	\caption[Cantante panel Información]{Pagina Cantante panel Información.}
+\label{fig:Video_Cantante}
+\end{center}
+\end{figure}
+\\\underline{\textbf{Funcionalidad:}} Para permitir a los usuarios seleccionar un vídeo de la lista creamos la función \textit{\textbf{'loadVideo(file,tipo)'}} y lo vinculamos a cada uno de los elementos de la lista.
+\\La función evalúa el tipo de archivo del que se trata ya que puede ser \textbf{<iframe>} o \textbf{<video>} y así reproducirlo a través del elemento adecuado.
+\begin{lstlisting}[
+caption=Función carga de vídeos.]
+ function loadVideo(file,tipo){
+  if(tipo == 'iframe'){
+   $('iframe').attr("src",file);
+   $("video").hide();
+   $("iframe").show();
+  }else{
+   var path ='/media/'+file;
+   $('video').attr("src",path);
+   $("iframe").hide();
+   $("video").show();
+  }
+ }
+\end{lstlisting}
+\subsubsection*{Discos}
+La información correspondiente a la tabla Discos y Canciones se vuelca en esta sección a través de la variable \textbf{cantanteSelec.listDiscos} y \textbf{album.listCanciones} que se distribuye dentro en el panel, figura \ref{fig:Discos_Cantante}.
+\begin{figure}[!h]
+\begin{center}
+   \includegraphics[width=0.5\linewidth]{Figures/discos_Cantante}
+	\decoRule
+	\caption[Cantante panel Discos]{Pagina Cantante panel Discos.}
+\label{fig:Discos_Cantante}
+\end{center}
+\end{figure}
+\\\underline{\textbf{Funcionalidad:}}Los usuarios pueden seleccionar un disco que desean escuchar pinchando sobre el provocando la llamada a la función \textbf{'loadList(this,imgLink)'}.La función se encarga de cargar la imagen correspondiente al disco seleccionado y carga las canciones en la lista de reproducción clonando el contenido de la etiqueta \textbf{<table>} que se encuentra oculto cuando se carga la pagina.
+\begin{lstlisting}[
+language=JavaScript,
+caption=Función carga lista de reproducción.]
+function loadList(elemente,imagen){
+ $('#ImgRepro').attr('src','/media/'+imagen);
+ var idElemento = $(elemente).attr("id");
+ var divListSong = $('#'+idElemento).siblings('div');
+ var idDivListSong = $(divListSong).attr("id");
+ $("table#x").remove();
+ $('#'+idDivListSong).children('table').clone().appendTo($('#x'));
+}
+\end{lstlisting}
+Una vez se ha cargado la lista de canciones definimos la función \textbf{loadSong(name,idElement,urlSong)} que permite reproducir la canción seleccionada.La función genera el path de la fuente que sirve el servicio con el parámetro \textbf{name} y pasa a comprobar si existe una reproducción en curso por medio de la etiqueta \textbf{<audio>} en caso afirmativo la pausa antes de producir el nuevo elemento.
+\\Para iniciar la reproducción utiliza el método \textbf{onloadeddata} que se ejecuta cuando la etiqueta \textbf{<audio>} tiene toda la información del fichero y así obtiene su duración para llamar a la función\textbf{ convertSeg\_Min(duration)} y actualizar este valor en la lista de reproducción.
+\begin{lstlisting}[
+caption=Función reproducir canción.]
+ function loadSong(name,idElement,urlSong){
+  var idTimer = 'timer_'+idElement;
+  var state_Actual = 'state_'+idElement;
+  var path = '/media/'+urlSong;
+  var audio = document.getElementById('repro');
+  if(!audio.paused){
+   audio.pause();
+   StopDrawProgres();
+  }
+  if (state_Actual != stado_Old && stado_Old != ''){
+   document.getElementById(stado_Old).innerHTML = '';
+  }
+  audio.src = path;	
+  audio.onloadeddata=function() {
+   var valor = audio.duration;
+   var str_Time = convertSeg_Min(valor);
+   document.getElementById(state_Actual).innerHTML = 'Reproduciendo';
+   document.getElementById(idTimer).innerHTML = str_Time;
+   porcentaje = convert(valor);
+   drawProgress(porcentaje);
+   audio.play();
+   stado_Old = state_Actual;
+  }
+ }
+\end{lstlisting}
+\subsubsection*{Imágenes}
+La información correspondiente a la tabla Imágenes en relación al cantante seleccionado se vuelca en esta sección a través de la variable \textbf{cantanteSelec.listImagenes} que se distribuye dentro del panel creando una galería de imágenes, figura \ref{fig:Imagenes_Cantante}.
+\begin{figure}[!h]
+\begin{center}
+   \includegraphics[width=0.6\linewidth]{Figures/imagenes_Cantante}
+	\decoRule
+	\caption[Cantante pestaña imágenes]{Pagina Cantante pestaña imágenes.}
+\label{fig:Imagenes_Cantante}
+\end{center}
+\end{figure}
+\subsection{Eventos}
+El usuario selecciona un evento del desplegable provocando una redireccion a la url \textit{\textbf{'/WebMultimedia/Eventos/idvento/'}} donde \textbf{idvento} corresponde al identificador del cantante dentro de la tabla \textbf{Evento}.
+\\La información se renderiza en el fichero \textbf{Evento.html}\footnote{Apéndice 3:Eventos} que consta de cuatro secciones que explicamos a continuación..
+\subsubsection*{1. Información}
+La información correspondiente la tabla Evento se vuelca en esta sección a través de la variable \textbf{evento} que contiene la información enviada por el servidor que se distribuye dentro del panel, figura \ref{fig:Informacion_Evento}.
+\begin{figure}[!h]
+\begin{center}
+   \includegraphics[width=0.6\linewidth]{Figures/Init_Evento}
+	\decoRule
+	\caption[Evento panel Información]{Pagina Evento panel Información.}
+\label{fig:Informacion_Evento}
+\end{center}
+\end{figure}
+\subsubsection*{2. Ubicación}
+En este panel se muestra la ubicación y servicios alrededor del dicha ubicación en un mapa de \textbf{Google Maps}.La información se distribuye en una sección donde se realizara la instancia del Mapa tras la renderizacion por medio del navegador y otra con servicios adicionales,  figura \ref{fig:Ubicacion_Evento}.
+\begin{figure}[!h]
+\begin{center}
+   \includegraphics[width=0.6\linewidth]{Figures/Ubicacion_Evento}
+	\decoRule
+	\caption[ Evento panel ubicación]{Pagina Evento panel ubicación.}
+\label{fig:Ubicacion_Evento}
+\end{center}
+\end{figure}
+\\\underline{\textbf{Funcionalidad:}} Cuando la pagina se carga por completo creamos una llamada Ajax a la url \textit{\textbf{ "/WebMutimedia/WebServRequest/"}}.En el cuerpo de la petición enviamos el nombre del lugar del que deseamos obtener las coordenadas geográficas y definimos \textit{\textbf{searchSucess(data, textStatus, jqXHR)}} que se encarga de recuperar la respuesta del servidor.
+\begin{lstlisting}[
+language=JavaScript,
+caption=Petición Ajax Ubicación Lugar.]
+ $.ajax({ 
+  type: "POST",
+  url:"/WebMutimedia/WebServRequest/",
+  data: {
+   'site' :$('#direct').text(),
+   'csrfmiddlewaretoken': $("input[name=csrfmiddlewaretoken]").val(),
+  },
+  success: searchSucess,
+  dataType: 'html',
+ });
+\end{lstlisting}
+La función \textbf{searchSucess(data, textStatus, jqXHR)} parsea a formato JSON la información que contiene la variable \textbf{data} de donde obtiene la información de las coordenadas accediendo a \textbf{geometry.location} tras esto se llama a la función \textbf{ WarchMap()} que es la encargada de crear el mapa con esta información.
+\begin{lstlisting}[
+caption=Respuesta Ajax Ubicación Lugar.]  
+ function searchSucess(data, textStatus, jqXHR){
+  var infoRequest = JSON.parse(data);
+  coordenadas = infoRequest.results[0].geometry.location;
+  WarchMap();  
+ }
+\end{lstlisting}
+Para utilizar los mapas interactivos de google maps es necesario descargase el \textbf{script JS} que han creado para esto.Tras esto en la variable \textbf{mapProp} se definen las características que queremos tenga el mapa y generamos la instancia del mapa por medio \textit{\textbf{new google.maps.Map()}} al que se le pasa el lugar del documento donde se tiene que crear y las propiedades anteriores.
+\\Hasta este momento solo se visualiza el mapa para mostrar con mas claridad el punto exacto donde se celebra el evento creamos un \textbf{marker} al que le pasa la posición,el tipo de animación,el mapa donde se tiene que crear y un cartel informativo.
+\begin{lstlisting}[
+caption=Creación Mapa con la Ubicación.]
+ function WarchMap(){
+  var lat = parseFloat(coordenadas.lat);
+  var long = parseFloat(coordenadas.lng);
+  var mapProp = {
+    center:new google.maps.LatLng(lat,long),
+    zoom:15,
+    mapTypeId:google.maps.MapTypeId.ROADMAP,
+  };
+  map=new google.maps.Map(document.getElementById("Maps"),mapProp);
+ 
+  var marker = new google.maps.Marker({
+   position: { lat:parseFloat(coordenadas.lat),lng:parseFloat(coordenadas.lng) },
+   draggable: true,
+   animation: google.maps.Animation.BOUNCE,
+   map: map,
+   title: 'Concierto'
+  });
+ }
+\end{lstlisting}
+\subsubsection*{3. Cantantes}
+La información correspondiente a la tabla Cantantes en relación al evento seleccionado se vuelca en esta sección a través de la variable \textbf{evento.listcantantes} que se distribuye dentro del panel, figura \ref{fig:Cantantes_Evento}.
+\begin{figure}[!h]
+\begin{center}
+   \includegraphics[width=0.6\linewidth]{Figures/Cantantes_Evento}
+	\decoRule
+	\caption[Evento panel Cantantes]{Pagina Evento panel Cantantes.}
+\label{fig:Cantantes_Evento}
+\end{center}
+\end{figure}
+\subsubsection*{4. Entradas}
+La información correspondiente a la tabla Entradas en relación al evento seleccionado se vuelca en esta sección a través de la variable \textbf{evento.listEntrada} que se distribuye dentro del panel, figura \ref{fig:Entradas_Evento}.
+\begin{figure}[!h]
+\begin{center}
+   \includegraphics[width=0.5\linewidth]{Figures/Entradas_Evento}
+	\decoRule
+	\caption[Evento pestaña Entradas]{Pagina Evento pestaña Entradas.}
+\label{fig:Entradas_Evento}
+\end{center}
+\end{figure}
+\\\underline{\textbf{Funcionalidad:}} Los usuarios añaden contenido al carrito de la compra por medio del botón \textbf{Add Car} del formulario que redirecciona la acción a la url \textbf{\textit{/WebMutimedia/AddCar/{{evento.id}}/{{ticket.id}}}}.
+\subsection{Carrito de la Compra}
+Es necesario permitir a los usuarios visualizar el detalle de su compra por lo que al pulsar sobre el enlace de la barra de navegación accedemos a la url \textit{\textbf{'/WebMutimedia/DetailCar/'}} mostrando cada uno de los elementos en forma de tabla a través de la variable \textbf{objCart.cart} en el fichero \textbf{CarDetail.html}\footnote{Anexo 3:Detalle CarShop},imagen \ref{fig:Detalle_CarShop}. 
+\begin{figure}[!h]
+  \begin{center}
+     \includegraphics[width=0.5\linewidth]{Figures/Detalle_CarShop}
+      \decoRule
+      \caption[Detalle Carrito]{Pagina Detalle Carrito.}
+  \label{fig:Detalle_CarShop}
+  \end{center}
+\end{figure}
+\\\underline{\textbf{Funcionalidad:}}Dentro del detalle de la compra es necesario proveer de varias acciones que explicamos a continuación para que el usuario pueda realizar modificaciones del contenido de su carrito.
+\begin{enumerate}
+\item \textbf{Actualizar}: Al seleccionar un nuevo numero de entradas y pulsar \textbf{'Update'} se redirecciona la petición a la url \textit{\textbf{'WebMultimedi/UpdateCar/idEvento/idTicket/'}} que se encarga llevar acabo la acción.
+\item \textbf{Eliminar}: Al pulsar \textbf{'Remove'} se redirecciona la petición a la url \textit{\textbf{'WebMultimedia/RemoveCart/idEvento/idTicket/'}}
+\item \textbf{Checkout}: Permite pasar a tramitar la orden de compra de los producto redireccionando la acción a la url \textit{\textbf{'WebMultimedia/Checkout/'}}.
+\end{enumerate}
+\subsection*{Orden de Compra}
+Esta ventana es visible cuando el usuario desea terminar la compra del contenido de su carrito  ya que muestra un resumen de los elementos añadidos a través de la variable \textbf{objCart.cart} y el formulario con los campos de la orden a rellenar en el fichero \textbf{Orden.html} \footnote{Apéndice 3:Orden}, figura  \ref{fig:Page_OrdenCompra}.
+\begin{figure}[!h]
+\begin{center}
+   \includegraphics[width=0.5\linewidth]{Figures/CheckOut_CarShop}
+	\decoRule
+	\caption[ Orden Compra]{Pagina Orden Compra.}
+\label{fig:Page_OrdenCompra}
+\end{center}
+\end{figure}
+\section{Pruebas}

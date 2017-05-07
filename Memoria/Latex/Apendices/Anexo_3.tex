@@ -1,0 +1,480 @@
+
+\chapter{Practica Tienda Online}
+% esqueleto.html
+esqueleto.html nav tab
+\begin{lstlisting}[framerule=0pt,
+aboveskip=0.5cm,
+framextopmargin=3pt,
+framexbottommargin=3pt,
+framexleftmargin=0.4cm,
+framesep=0pt,
+rulesep=.4pt,
+numbers=left,
+numbersep=15pt,
+numberstyle=\tiny,
+numberfirstline = false,
+breaklines=true,
+frame=single,
+stringstyle=\ttfamily,
+showstringspaces = false,
+basicstyle=\small\ttfamily,
+keywordstyle=\bfseries,
+rulesepcolor=\color{black},
+captionpos=b,
+language=Python,,
+caption=Barra de navegación formato HTML.]
+<nav class="navbar navbar-inverse">
+ <div class="container">
+  <div class="navbar-header">
+   <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+     <span class="icon-bar"></span>
+     <span class="icon-bar"></span>
+     <span class="icon-bar"></span> 
+   </button>
+   <a class="navbar-brand" >WebSiteName</a>
+  </div>
+  <div class="collapse navbar-collapse" id="myNavbar">
+   <ul class="nav navbar-nav">
+    <li class="active"><a href="/WebMutimedia/">Home</a></li>
+    <li class="dropdown">
+     <a class="dropdown-toggle" data-toggle="dropdown" href="#">Cantantes
+     <span class="caret"></span></a>
+     <ul class="dropdown-menu">
+      {% for cantante in listCantantes %}
+      <li><a href="/WebMutimedia/Cantantes/{{cantante.id}}">{{cantante.nombre}}</a></li>
+      {% endfor %}
+     </ul>
+    </li>
+    <li class="dropdown">
+     <a class="dropdown-toggle" data-toggle="dropdown" href="#">Eventos
+     <span class="caret"></span></a>
+     <ul class="dropdown-menu">
+      {% for evento in listFestivales %}
+      <li><a href="/WebMutimedia/Eventos/{{evento.id}}">{{evento.nombre}}</a></li>
+      {% endfor %}
+     </ul>
+    </li> 
+    <li>{% csrf_token %}
+     <input id="textSearch" onchange="sendInfo()" type="text"  class="form-control" placeholder="Search" style="width:
+     250px;margin-top: 8px;" />
+     <div id='listSearch'></div>
+    </li> 
+   </ul>
+   <ul class="nav navbar-nav navbar-right">
+    <li><a href="/WebMutimedia/Contacta">Contacta</a></li>
+    {% if user.is_authenticated %}
+     <li><a><span class="glyphicon glyphicon-user"></span> {{user.username}}</a></li>
+     <li><a href="#">Logout</a></li>
+    {% else %}
+     <li><a href="/WebMutimedia/Register">Register</a></li>
+     <li onclick="SeeLogin()"><a>Login</a></li>
+    {% endif %}
+    {% if user.is_authenticated %}
+    <li class="dropdown">
+     <a href="#" class="dropdown-toggle" data-toggle="dropdown">Perfil<b class="caret"></b></a>
+     <ul class="dropdown-menu">
+       <li><a href="/WebMutimedia/Perfil/">Consultar</a></li>
+       <li><a href="#">Modificar</a></li>
+     </ul>
+    </li>
+    {% endif %}
+    <li>
+     <a href="/WebMutimedia/DetailCar/">
+       <span class="glyphicon glyphicon-shopping-cart"></span>
+       {% if items > 0 %}
+        ({{items}}) : {{precio}}
+       {% else %} 0
+       {% endif %}
+     </a>
+    </li>
+   </ul>
+  </div>
+ </nav>
+\end{lstlisting}
+contacta
+\begin{lstlisting}[framerule=0pt,
+aboveskip=0.5cm,
+framextopmargin=3pt,
+framexbottommargin=3pt,
+framexleftmargin=0.4cm,
+framesep=0pt,
+rulesep=.4pt,
+numbers=left,
+numbersep=15pt,
+numberstyle=\tiny,
+numberfirstline = false,
+breaklines=true,
+frame=single,
+stringstyle=\ttfamily,
+showstringspaces = false,
+basicstyle=\small\ttfamily,
+keywordstyle=\bfseries,
+rulesepcolor=\color{black},
+captionpos=b,
+language=Python,
+caption=Contacta formato HTML.]
+ <div id='panel_root' class="panel panel-default">
+  <div class="panel-heading">Contacta</div>
+   <div class="panel-body">		
+    <form action="." method="POST">
+     {% csrf_token %}
+     <div class="field">
+      <label for="id_nombre">Nombre</label>
+      {{form.nombre}}
+     </div>
+     <div class="field">
+      <label for="id_correo">Email</label>
+      {{form.correo}}
+     </div>
+     <div class="field">
+      <label for="id_numeroTlf">Telefono</label>
+      {{form.numeroTlf}}
+     </div>
+	 <div id="area" class="field">
+      <label for="id_area_0">Area:</label>
+      {{form.area}}
+     </div>
+     <div class="field">
+      {{form.motivo}}
+     </div>
+     <button class="btn btn-primary" type="submit"> Enviar </button>
+    </form>
+   </div>
+  </div>
+\end{lstlisting}
+
+register
+\begin{lstlisting}[framerule=0pt,
+aboveskip=0.5cm,
+framextopmargin=3pt,
+framexbottommargin=3pt,
+framexleftmargin=0.4cm,
+framesep=0pt,
+rulesep=.4pt,
+numbers=left,
+numbersep=15pt,
+numberstyle=\tiny,
+numberfirstline = false,
+breaklines=true,
+frame=single,
+stringstyle=\ttfamily,
+showstringspaces = false,
+basicstyle=\small\ttfamily,
+keywordstyle=\bfseries,
+rulesepcolor=\color{black},
+captionpos=b,
+language=Python,
+caption=Register formato HTML.]
+<div id='panel_root' class="panel panel-default">
+ <div class="panel-heading">Register</div>
+  <div class="panel-body">
+   <form action="." method="POST">
+    {% csrf_token %}
+    <div id='panel_datos' class="panel panel-default">
+     <div class="panel-heading">Datos Contacto</div>
+      <div class="panel-body">
+       <div class="field">
+        <label for="id_nombre"><small>Nombre</small></label>
+        {{form.nombre}}
+       </div>
+       <div class="field">
+        <label for="id_apellido"><small>Apellido</small></label>
+        {{form.apellido}}
+       </div>
+       <div class="field">
+        <label for="id_edad"><small>Edad</small></label>
+        {{form.edad}}
+       </div>
+       <div class="field">
+        <label for="id_telefono"><small>Telefono</small></label>
+        {{form.telefono}}
+       </div>
+       <div class="field">
+        <label for="id_pais"><small>Pais</small></label>
+        {{form.pais}}
+       </div>
+       <div class="field">
+        <label for="id_provincia"><small>Provincia</small></label>
+        {{form.provincia}}
+       </div>
+       <div class="field">
+        <label for="id_direccion"><small>Direccion</small></label>
+        {{form.direccion}}
+       </div>
+       <div id="sexo" class="field">
+        <label for="id_area_0"><small>Sexo</small></label>
+        {{form.sexo}}
+       </div>
+      </div>
+     </div>
+     <div  id='panel_contact' class="panel panel-default">
+      <div class="panel-heading">Datos Aplicacion</div>
+      <div class="panel-body">
+       <div class="field" >
+        <label for="id_nick"><small>Nick</small></label>
+        {{form.nick}}
+       </div>
+       <div class="field">
+        <label for="id_correo"><small>Email</small></label>
+        {{form.correo}}
+       </div>
+       <div class="field">
+        <label for="id_password"><small>Contrasena</small></label>
+        {{form.password}}
+       </div>
+       <div class="field">
+        <label for="id_password2"><small>Repetir Contrasena</small></label>
+        {{form.password2}}
+       </div>
+       <button class="btn btn-primary" type="submit"> Enviar </button>
+      </div>
+     </div>
+    </form>
+   </div>
+</div>
+\end{lstlisting}
+
+home
+\begin{lstlisting}[framerule=0pt,
+aboveskip=0.5cm,
+framextopmargin=3pt,
+framexbottommargin=3pt,
+framexleftmargin=0.4cm,
+framesep=0pt,
+rulesep=.4pt,
+numbers=left,
+numbersep=15pt,
+numberstyle=\tiny,
+numberfirstline = false,
+breaklines=true,
+frame=single,
+stringstyle=\ttfamily,
+showstringspaces = false,
+basicstyle=\small\ttfamily,
+keywordstyle=\bfseries,
+rulesepcolor=\color{black},
+captionpos=b,
+language=Python,
+caption=Home formato HTML.]
+<div class="row">
+ <div class="col-sm-12">
+  <div id="myCarousel" class="carousel slide" data-ride="carousel">
+   <!-- Indicators -->
+   <ol class="carousel-indicators">
+    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+    <li data-target="#myCarousel" data-slide-to="1"></li>
+    <li data-target="#myCarousel" data-slide-to="2"></li>
+    <li data-target="#myCarousel" data-slide-to="3"></li>
+   </ol>
+   <!-- Wrapper for slides -->
+   <div class="carousel-inner" role="listbox">
+     <div class="item active">
+      <img style="height: 525px" class="img-responsive" src="/static/chris.jpg" alt="Chania">
+     </div>
+     <div class="item">
+      <img style="height: 525px" class="img-responsive" src="/static/cnco.jpg" alt="Chania">
+     </div>
+     <div class="item">
+      <img style="height: 525px" class="img-responsive" src="/static/DREAMBEACH.jpg" alt="Flower">
+     </div>
+     <div class="item"
+      <img style="height:  525px" class="img-responsive" src="/static/ultra-music-festival.jpg" alt="Flower">
+     </div>
+   </div>
+  	<!-- Left and right controls -->
+    <a class="left carousel-control" href="#myCarousel" role="button" data-slide="prev">
+     <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+     <span class="sr-only">Previous</span>
+    </a>
+    <a class="right carousel-control" href="#myCarousel" role="button" data-slide="next">
+     <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+     <span class="sr-only">Next</span>
+    </a>
+  </div>
+ </div>
+</div>
+<div class="row">
+ <p>Tres subsecciones con las novedades </p>	
+ <div class="col-sm-6">
+  <p>Novedad Cantantes</p>
+  <img class="img-responsive" src="/static/cnco.jpg" alt="Chania">
+  <p>Ultimos cantantaes en la web.</p>
+ </div>
+ <div class="col-sm-6">
+  <p>Novedad Eventos</p>
+  <img class="img-responsive" src="/static/cnco.jpg" alt="Chania">
+  <p>Ultimos eventos en la web.</p>
+ </div>
+</div>
+\end{lstlisting}
+
+cantantes.html
+falta importarlo
+
+eventos.html
+falta importarlo
+
+Anexo 3:Detalle CarShop.
+\begin{lstlisting}[
+language=HTML,
+caption=Pagina Detalle Carrito formato HTML.]
+<div class="row">
+ <div id='panel_root' class="panel panel-default">
+  <div class="panel-heading">Detalle compra</div>
+  <div class="panel-body">
+   <table class="table table-striped table-inverse">
+    <thead>
+     <tr>
+      <th class="small">Imagen</th>
+      <th class="small">Producto</th>
+      <th class="small">Cantidad</th>
+      <th class="small">Update</th>
+      <th class="small">Elminar</th>
+      <th class="small">Valor Total</th>
+     </tr>
+    </thead>
+    <tbody>
+    {% for item in objCart.cart.values %}
+    <tr>
+     <td class="small"><img src="/media/{{item.imgUrl}}" ></td>
+     <td class="small">
+       <ul>
+          <li>{{item.name}}</li>
+          <li>{{item.typeTicket}}</li>
+       </ul>
+     </td>
+     <td class="small">{{item.unidades}}</td>
+     <td class="small">
+      <form class="form-inline" method="POST" action="/WebMutimedia/UpdateCart/{{item.name}}/{{item.idTicket}}/">
+      {% csrf_token %}	
+      <div class="form-group">
+       <div class="field">
+        {{formCantidad.quantity}}
+       </div>
+      </div>
+      <button type="submit" class="btn btn-default btn-sm">Update</button>
+      </form>
+     </td>
+     <td class="small">
+      <form method="POST" action="/WebMutimedia/RemoveCart/{{item.name}}/{{item.idTicket}}/">	
+       {% csrf_token %}
+       <button type="submit" class="btn btn-default btn-sm">Remove</button>
+      </form>
+     </td>
+     <td class="small">{{item.precio}}</td>
+    </tr>
+    {% endfor %}
+    <tr>
+     <td class="small">Total:</td>
+     <td class="small-sm-4">{{objCart.totalPrice}}</td>
+    </tr>
+   </tbody>
+  </table>
+  <a href="/WebMutimedia/Checkout"><button type="button" class="btn btn-default btn-sm">Checkout</button></a>
+ </div>
+ </div>
+ </div>
+</div>
+\end{lstlisting}
+
+orden de compra
+\begin{lstlisting}[framerule=0pt,
+aboveskip=0.5cm,
+framextopmargin=3pt,
+framexbottommargin=3pt,
+framexleftmargin=0.4cm,
+framesep=0pt,
+rulesep=.4pt,
+numbers=left,
+numbersep=15pt,
+numberstyle=\tiny,
+numberfirstline = false,
+breaklines=true,
+frame=single,
+stringstyle=\ttfamily,
+showstringspaces = false,
+basicstyle=\small\ttfamily,
+keywordstyle=\bfseries,
+rulesepcolor=\color{black},
+captionpos=b,
+language=HTML,
+caption=Pagina Orden Compra formato HTML.]
+<div class="row">
+ <div class="col-sm-6">
+  <div id='panel_root' class="panel panel-default">
+   <div class="panel-heading">Orden de compra</div>
+   <div class="panel-body">
+    <form method="POST" action=".">
+     {% csrf_token %}
+     <div class="field">
+      {{form.asunto.errors}}
+      <label for="id_nombre"><small>Nombre</small></label>
+      {{form.nombre}}
+     </div>
+     <div class="field">
+      {{form.asunto.errors}}
+      <label for="id_nombre"><small>Apellido</small></label>
+      {{form.apellido}}
+     </div>
+     <div class="field">
+      {{form.asunto.errors}}
+      <label for="id_nombre"><small>Email</small></label>
+      {{form.email}}
+     </div>
+     <div class="field">
+      {{form.asunto.errors}}
+      <label for="id_nombre"><small>Telefono</small></label>
+      {{form.telefono}}
+     </div>
+     <div class="field">
+      {{form.asunto.errors}}
+       <label for="id_nombre"><small>Direccion</small></label>
+       {{form.direccion}}
+      </div>
+      <div class="field">
+       {{form.asunto.errors}}
+       <label for="id_nombre"><small>Codigo Postal</small></label>
+       {{form.codigo_postal}}
+      </div>
+      <div class="field">
+       {{form.asunto.errors}}
+       <label for="id_nombre"><small>Pais</small></label>
+       {{form.pais}}
+      </div>
+      <button class="btn btn-primary" type="submit"> Enviar </button>
+     </form>
+    </div>
+   </div>
+  </div>
+  <div class="col-sm-6">
+   <div id='panel_root' class="panel panel-default">
+    <div class="panel-heading">Su orden</div>
+    <div class="panel-body">
+     <table class="table table-striped table-inverse">
+      <thead>
+       <tr>
+        <th class="small">Producto</th>
+        <th class="small">Precio</th>
+       </tr>
+      </thead>
+     <tbody>
+     {% for item in objCart.cart.values %}
+     <tr>
+      <td class="small">
+       <li>{{item.name}}</li>
+       <li>{{item.typeTicket}} x {{item.unidades}}</li>
+      </td>
+      <td class="small">{{item.precio}}</td>
+     </tr>
+     {% endfor %}
+     <tr>
+      <td class="small">Total</td>
+      <td class="small">{{objCart.totalPrice}}</td>
+     </tr>
+    </tbody>
+   </table>
+  </div>
+ </div>
+ </div>
+</div>
+\end{lstlisting}
