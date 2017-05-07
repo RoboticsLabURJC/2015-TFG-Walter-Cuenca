@@ -1,15 +1,7 @@
+
 # 2015-TFG-Walter-Cuenca
-qweqwe
-wqeqweqw
-
-qweqwe
-
-wqewqe
-wq
-ewq
-e
-qw
-eqw
-e
-qw
-eqweqw
+Esta carpeta contien el codigo de las praticas del TFG
+ 1.Pacman
+ 2.Pacman multiplayer
+ 3.Aplicacion Web
+ 4.Comunicacion Multimedia
