@@ -1,5 +1,5 @@
 % Chapter Comecocos Online Multiplayer
-\chapter{Comecocos Online Multiplayer}
+\chapter{Comecocos Multijugador}
 \section{Enunciado}
 En la comunidad de internet han aumentado el desarrollo de aplicaciones en tiempo real entre distintos usuarios que se encuentran en diferentes partes del mundo.
 Esta segunda practica es una extensión de la primera ya que ahora el juego se va a ser multijugador online por medio de interfaz Web.
@@ -11,7 +11,7 @@ Esta segunda practica es una extensión de la primera ya que ahora el juego se v
 \label{fig:Pacman_Intro2}
 \end{center}
 \end{figure}
-\subsection{Requisitos}
+\paragraph{Requisitos}
 El comportamiento del juego sera el desarrollado en la primera practica pero sera necesario organizarlo de tal forma que el cliente se encargue de ciertas tareas y el servidor de otras con el objetivo de intercambiar información por medio de WebSockets, a continuación se explica en detalle cada una.
 \begin{enumerate}
 \item\textbf{Cliente}
@@ -29,15 +29,18 @@ El comportamiento del juego sera el desarrollado en la primera practica pero ser
 \item Por medio de la conexión WebSockets gestiona la entrada en sala,inicio del juego y la actualización de los distintos elementos del juego.
 \end{itemize}
 \end{enumerate}
-\subsection{Tecnologías necesarias}
-  \begin{enumerate}
-    \item WebSockets.
-    \item JavaScript.
-    \item NodeJS.
-  \end{enumerate}
-\section{Desarrollo}
-El desarrollo se separa en cliente y servidor, aunque existen funciones \footnote{Apéndice A} que no explicamos a fondo ya que son las mismas que las de la primera practica o son auxiliares.
-\section{Servidor}
+\paragraph{Tecnologías}
+Sera necesario emplear la API WebSockets y JavaScript en el cliente mientras que en el servidor utilizaremos NodeJS.
+\section{Diseño}
+\begin{figure}[!h]
+\begin{center}
+  \includegraphics[width=0.9\linewidth]{Figures/Esquema_Pacman_Multijugador}
+	\decoRule
+	\caption[Esquema Pacman multijugador]{Esquema Pacman multijugador.}
+\label{fig:Esquema_Pacman_Multijugador}
+\end{center}
+\end{figure}
+\section{Desarrollo Servidor}
 El servidor de la aplicación lo desarrollamos con NodeJS por lo que se importa las librerías \textbf{node-static} y \textbf{http} para la creación del servidor.
 \\Con esto el servidor entrega el fichero inicial a los usuarios que se conecten pero queda importar la librería \textbf{socket.io} para crear la conexión WebSockets en el momento de recibir una petición.
 \begin{lstlisting}[
@@ -353,7 +356,7 @@ La figura \ref{fig:Server_NewPos_Counter} muestra el envió del coco comido por 
 \label{fig:Update_ElementsPosition}
 \end{center}
 \end{figure}
-\section{Cliente}
+\section{Desarrollo Cliente}
 Los jugadores que conectan a la url \textbf{http://localhost:8181/} en la que se encuentra el servidor que entrega el fichero \textbf{index.html} \footnote{Apéndice A} al navegador estableciendo la conexión WebSockets con el servidor.
 \begin{figure}[!h]
 \begin{center}
