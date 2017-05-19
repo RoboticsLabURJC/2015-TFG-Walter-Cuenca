@@ -5,26 +5,31 @@ En la actualidad gracias a las novedades introducidas en la Web han aumentando l
 \\Por ello en esta primera practica se pide desarrollar un juego con herramientas nativas de la web.Dentro de las varias opciones existentes el juego seleccionado es Pac-Man(comecocos).
 \begin{figure}[!h]
 \begin{center}
-   \includegraphics[width=0.5\linewidth]{Figures/Pacman_Intro}
+  \includegraphics[width=0.5\linewidth]{Figures/Pacman_Intro}
 	\decoRule
 	\caption[Aspecto clásico Pacman]{Aspecto clásico Pacman.}
 \label{fig:Pacman_Intro}
 \end{center}
 \end{figure}
-\subsection{Requisitos}
+\paragraph{Requisitos}
 Se presenta los distintos elemento que forman parte del juego y la función que deben desarrollar.
 \begin{enumerate}
 \item \textbf{Escenario:} Contiene todos los elementos estáticos del juego con los que interactua Pacman como pueden ser los obstáculos y el contorno del escenario que no pueden ser sobrepasados y los cocos que es la comida de Pacman.Ademas informara al usuario del tiempo y puntos a medida que progrese la partida.
 \item \textbf{Pacman:} se trata del personaje principal del juego que controle el usuario.
 \item \textbf{Fantasmas:} son los enemigos que persiguen a Pacman durante la partida.En total serán 4 fantasmas\footnote{fuente:\url{http://gameinternals.com/post/2072558330/understanding-pac-man-ghost-behavior}} que ha diferencia de Pacman no interactuan con los elementos del juego ya que solo basan su comportamiento en la posición de Pacman,esto es conocido como modo de persecución por lo es necesario aplicar un algoritmo básico de Inteligencia Artificial.
 \end{enumerate}
-\subsection{Tecnologías necesarias}
-\begin{enumerate}
-\item HTML5 tags: canvas,audio.
-\item HTML5 API: LocalStorage
-\item JavaScript
-\item Inteligencia Artificial.
-\end{enumerate}
+\paragraph{Tecnologías}
+Sera necesario emplear las etiquetas canvas y audio ademas de la API LocalStorage de HTML5, JavaScript e inteligencia artificial en juegos. 
+\section{Diseño}
+Una vez se ha planteado la practica pasamos a definir el esquema que se va a seguir en la etapa del desarrollo. 
+\begin{figure}[!h]
+\begin{center}
+  \includegraphics[width=0.7\linewidth]{Figures/esquemaP1}
+	\decoRule
+	\caption[Diseño comecocos web]{Diseño comecocos web.}
+\label{fig:Pacman_Intro}
+\end{center}
+\end{figure}
 \section{Desarrollo}
 Como se ha dicho a lo largo de este desarrollo la lógica del juego recae sobre JavaScript. Por esto se han creado tres tipos de objetos (GameArea, Pacman, Ghost) con el objetivo de hacer más compacto el código y menos repetitivo ya que hay muchas funciones que tienden a repetirse.
 \subsection{Game Area}
@@ -561,30 +566,41 @@ caption=Renderizado del juego.]
 }
  \end{lstlisting}
 \section{Pruebas}
-El usuario  abre el archivo 'game\_pacman.html' dando lugar a la interpretacion del archivo por el navegador.
+Para realizar las pruebas necesitamos disponer de un portátil en el que se encuentre el fichero de la practica, ademas de tener instalado varios navegadores como pueden ser Chrome, FireFox e Internet Explorer.
+
+Se ejecuta el fichero \textbf{game\_pacman.html} en cada navegador provocando que se visualice el juego, figura \ref{fig:InitGame}.
 \begin{figure}[!h]
 \centering
-\includegraphics[width=80mm]{Figures/InitGame}
+\includegraphics[width=65mm]{Figures/InitGame}
 \decoRule
 \caption[Inicio Juego]{Inicio juego Pacman.}
 \label{fig:InitGame}
 \end{figure}
-Tras la interpretacion se muestra el escenario de juego con sus elementos y un panel informativo con datos de la partida \ref{fig:InitGame}.
-\\Para iniciar la aplicación el usuario pulsa la tecla 'L'  provocando el movimiento de los fantasmas y el inicio del cronometro.A partir de este momento el usuario puede manipular a Pacman a traves de las flechas del teclado ademas se permite al usuario parar el juego pulsado la tecla 'P' e iniciar nuevamente el juego con la tecla 'L' imagen\ref{fig:Pause/Start game}.
+
+Para iniciar la aplicación el usuario pulsa la \textbf{tecla L}  provocando el movimiento de los fantasmas y el inicio del cronometro. A partir de este momento el usuario puede manipular a Pacman por medio de las flechas del teclado. Ademas se permite al usuario pausar el juego pulsado la \textbf{tecla P}, figura \ref{fig:Pause/Start game}.
 \begin{figure}[!h]
 \centering
 \subfigure[Juego pausado]{\includegraphics[width=43mm]{Figures/PauseGame}}\hspace{5mm}
 \subfigure[Juego no pausado]{\includegraphics[width=43mm]{Figures/InitGame}}
 \caption{Pause/Start juego.} \label{fig:Pause/Start game}
 \end{figure}
-\\Finalmente, el juego termina cuando se produce algunas de las situaciones que se mencionan a continuación  \ref{fig:Game/Loose game}
-\begin{enumerate}
-\item Cuando uno de los fantasmas atrapa a Pacman daremos la partida como perdida y en la pantalla se visualiza 'Game Over'.
-\item Cuando Pacman se ha comido todos los cocos la partida finaliza la partida y el usuario ha ganado la partida. El usuario visualiza 'Win Game' y si quiere guardar informacion de la partida puede pulsar 'Save Score'.
-\end{enumerate}
+
+La partida termina cuando uno de los fantasmas captura a Pacman provocando que se visualice \textbf{Game Over} o cuando Pacman se ha comido todos los cocos  provocando que se visualice \textbf{Win Game}, figura \ref{fig:Game/Loose game}
 \begin{figure}[!h]
 \centering
 \subfigure[Partida perdida]{\includegraphics[width=40mm]{Figures/GameOver}}
 \subfigure[Partida Ganada]{\includegraphics[width=40mm]{Figures/Win_Game}}
 \caption{Game/Loose juego.} \label{fig:Game/Loose game}
 \end{figure}
+
+A continuación, se muestra una tabla resumen del resultado de las pruebas en los distintos navegadores.
+\begin{table}[!h]
+\centering
+\caption{My caption}
+\label{my-label}
+\begin{tabular}{llll}
+\hline
+\textbf{}                                                                                  & \textbf{Chrome}        & \textbf{Firefox}       & \textbf{Internet Explore} \\ \hline
+\multicolumn{1}{c}{\textbf{\begin{tabular}[c]{@{}c@{}}Funcionamiento\\  APP\end{tabular}}} & \multicolumn{1}{c}{OK} & \multicolumn{1}{c}{OK} & \multicolumn{1}{c}{OK}   
+\end{tabular}
+\end{table}
