@@ -1,4 +1,4 @@
-\chapter{Aplicación multimedia}
+\chapter{VideoConferencia usando WebRTC}
 \section{Enunciado}
 Las aplicaciones multimedia en tiempo real permiten conectar a distintos usuarios a través de la red e intercambiando información de audio,vídeo u otro tipo. Un ejemplo de este tipo de aplicación es Skype que ha tenido mucho éxito ya que permite a sus usuarios establecer videollamadas e intercambiar información una vez se haya instalado el software.
 \begin{figure}[!h]
@@ -9,31 +9,19 @@ Las aplicaciones multimedia en tiempo real permiten conectar a distintos usuario
 \label{fig:canvasPrimitivas}
 \end{center}
 \end{figure}
-\\Por lo tanto en esta ultima practica se pide desarrollar una aplicación web similar a Skype que permita a los usuarios conectarse entre si a través de la url de la aplicación.Una vez dentro el usuario selecciona los elementos multimedia(audio y video) que desea compartir y tendrá que elegir si unirse o crear una sala donde los usuario mantendrán la comunicación.
-\\Por ultimo, se podrá enviar cadena de texto entre los usuarios de una determinada sala a través del chat de la aplicación al igual que enviar archivos.
-\subsection{Tecnologías necesarias}
-\begin{enumerate}
-\item API WebRTC
-\item API File
-\item NodeJS
-\item Socket.io
-\item JavaScript
-\item Boostrap
-\end{enumerate}
-\subsection{Objetivos}
-La practica tiene que cubrir los siguientes puntos
-\begin{enumerate}
-\item Creación/Unión de salas por parte de los usuarios.
-\item El usuario seleccionara los elementos multimedia a compartir.
-\item Transmisión de los elementos multimedia seleccionados entre los usuarios.
-\item Creación de un servidor de señalizacion.
-\item Topologia de comunicación en Malla.
-\item Comunicación final Peer-to-Peer entre los navegadores.
-\end{enumerate}
-\section{Desarrollo}
-Las próximas secciones trata la funcionalidad del cliente y servidor para entender mejor las funciones de cada uno.
+
+Por lo tanto en esta ultima practica se pide desarrollar una aplicación web similar a Skype que permita a los usuarios conectarse entre si a través de la url de la aplicación.
+\paragraph{Requisitos}
+Los usuario dentro de la aplicación podrán seleccionar los elementos multimedia(audio y vídeo) que desean compartir,   ademas de seleccionar o crear una sala donde se establecerá la videoconferencia. 
+
+los participantes  de la videoconferencia en la sala  dispondrán de un chat y de la posibilidad de intercambiar ficheros por medio de WebRTC ya que la comunicación sera Peer-to-Peer en este punto.
+
+Para llevar acabo lo descrito anteriormente sera necesario crear un servidor de señalizacion para establecer la fase  de comunicación inicial de WebRTC.
+\paragraph{Tecnologías}
+Sera necesario emplear WebRTC, API File, JavaScript para el lado cliente mientras que para el servidor de señalizacion utilizamos NodeJS. Ademas se utilizara WebSockets como mecanismo de comunicación con el servidor y Boostratps para trabajar la apariencia de la aplicación.
+\section{Diseño}
 %%%%%%%% Servidor Desarrollo %%%%%%%%
-\section{Servidor de señalización}
+\section{Desarrollo Servidor Señalizaion}
 El primer paso para crear el servidor es importar la librería \textbf{node-static},\textbf{http} y \textbf{socket.io}. La librería \textbf{http} permite crear un servidor a través del método \textbf{createServer} en el puerto 8181 en nuestro caso mientras que la librería \textbf{node-static} permite enviar el documento a los usuarios que se conecten.
 \\Finalmente, la librería \textbf{socket.io} se utiliza para establecer comunicación entre el cliente y servidor, figura \ref{fig:EjecucionServer}.
 \begin{lstlisting}[
@@ -132,7 +120,7 @@ La figura \ref{fig:AnswerServer} encamina la oferta, la figura \ref{fig:OfferSer
 \end{figure}
 El servidor deja de participar en el intercambio de información entre los peers cuando el proceso de señalizacion termina ya que desde ese momento la comunicación es Peer-to-Peer.
 %%%%%%%% Cliente Desarrollo %%%%%%%%
-\section{Cliente}
+\section{Desarrollo Cliente Peer-to-Peer}
 Los usuarios se conectan al servidor a través de la url \textbf{http://localhost:8181} en un navegador que recibe el fichero \textbf{index.html}\footnote{Apéndice 4: Index}.
 \\Se establece la conexión con el servidor a través de Websockets y se pide al usuario que introduzca el nombre que utilizara en la aplicación.
 \begin{lstlisting}[
