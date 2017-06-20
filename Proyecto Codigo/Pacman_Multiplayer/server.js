@@ -1,9 +1,10 @@
 var static = require('node-static');
 var http = require('http');
 /* modulo con los objetos del juego  */
-var misc = require('./public/js/astar.js');
-var Game = require('./public/js/CoreServer.js'); 
+
 var file = new(static.Server)();
+
+
 // Create a node-static server instance
 
 //var fs = require('fs');
@@ -17,6 +18,10 @@ var app = http.createServer(function (req, res) {
   console.log('Server listinig 8181');
 }).listen(8181);
 
+app.use(express.static(__dirname + '/public'));
+
+var misc = require('astar.js');
+var Game = require('CoreServer.js'); 
 /*
 	Funcion de intercambio entre los usuarios
 	 	*de momento se va a crear una sola sala de jeugo
