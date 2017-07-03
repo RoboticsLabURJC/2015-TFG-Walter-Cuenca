@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Pagina de bienvenida</title>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+	<script type="text/javascript">
+	var infoUser;
+	function load_info(){
+		var cookie = document.cookie;
+		var list_cookie = cookie.split(";");
+		console.log(list_cookie);
+		infoUser = JSON.parse(list_cookie[0].split("=")[1]);
+		console.log(infoUser);
+		$('#titulo').append('<p><h1>Gracias por volver a la web '+infoUser.names+'</h1></p>');
+		for(items in infoUser){
+			$('#info_user').append('<p><strong>'+items+':'+infoUser[items]+'</strong></p>');
+		}
+		updateCookie(infoUser);
+	}
+
+	function updateCookie(infoUser){
+		infoUser.num_visitas=(infoUser.num_visitas)+1;
+		var d = new Date();
+		var hora = d.getHours()+':'+d.getMinutes()+':'+d.getSeconds();
+		infoUser.Fecha=hora;
+		document.cookie = "user="+JSON.stringify(infoUser);
+		//console.log(document.cookie);
+	}
+
+	function delete_cookie(){
+		var today = new Date();
+	    var expires = ";expires="+today.toUTCString(today.getTime());
+	    document.cookie = "user="+infoUser+expires;
+	}
+	
+	</script>
+</head>
+<body onload="load_info()">
+	<div id="titulo"></div>
+	<p><h3>-------------------------------------------------------------------</h3></p>
+	<div id="info_user"></div>
+	<button onclick="delete_cookie()">Logout</button>
+</body>
+</html>

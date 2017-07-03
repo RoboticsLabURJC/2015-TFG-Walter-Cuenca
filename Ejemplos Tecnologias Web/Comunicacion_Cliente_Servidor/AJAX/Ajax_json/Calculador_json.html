@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Suma dos numeros con Ajax</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	<script type="text/javascript">
+	
+	var operador;
+	var numbers =[];
+
+	function logs(info){
+		console.log(info);
+	}
+
+	function comprobar(id){	
+		var numero = document.getElementById(id).value;
+		if(numero != " "){
+			numbers.push(numero);
+			send_items();
+		}
+	}
+
+	function send_items(){
+		if(operador != null && numbers.length == 2){
+			loadDoc();
+			numbers = [];
+		}
+	}
+	
+	function comprobar_operador(id){
+		var elemento = document.getElementById(id);
+		if(elemento.checked == true){
+			logs(operador);
+			if(operador == null){
+				operador = document.getElementById(id);
+				logs(operador);
+				send_items();
+			}else{
+				elemento.checked = false;
+			}
+		}
+	}
+
+	function creat_query(){
+		return "num1="+numbers[0]+"&num2="+numbers[1]+"&operacion="+operador.value;
+	}
+
+
+	//una vez comprobamos que estan los dos numeros creamos las peticiones ajax
+	function loadDoc() {
+		var info = creat_query();
+  		var xhttp = new XMLHttpRequest();
+  		xhttp.onreadystatechange = function() {
+	    	if (xhttp.readyState == 4 && xhttp.status == 200) {
+	    		logs("recibo el contenido")
+	      		document.getElementById("resultado").value = xhttp.responseText;
+   			}
+   		};
+		xhttp.open("POST", "http://localhost:3000/", true);
+		xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		xhttp.send(info);
+		logs(info);
+	}
+
+
+	function clean_operador(){
+		var num = document.getElementById("first_num");
+		num.value ="";
+		var num2 = document.getElementById("second_num");
+		num2.value = "";
+		operador.checked = false;
+		operador = null;
+	}
+
+	</script>
+</head>
+<body>
+	<p><h1>Calculadora de operaciones basicas</h1></p>
+	<p>Introducir dos numeros</p>
+		<input type="number" id="first_num" onchange="comprobar('first_num')" placeholder="first number">
+		<input type="number" id="second_num" onchange="comprobar('second_num')" placeholder="second number">
+	<p>Seleccione una operacion</p>
+		<input type="checkbox" id="opera1" value="suma"  onclick ="comprobar_operador('opera1')">Suma
+		<input type="checkbox" id="opera2" value="resta" onclick="comprobar_operador('opera2')">Resta
+		<input type="checkbox" id="opera3" value="producto" onclick="comprobar_operador('opera3')">Multiplicacion
+		<input type="checkbox" id="opera4" value="division" onclick="comprobar_operador('opera4')">Division
+	<p>Resultado</p>
+	<input type="number" id="resultado">
+	<button onclick="clean_operador()">clean</button>
+</body>
+</html>
