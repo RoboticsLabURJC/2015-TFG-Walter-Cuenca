@@ -9,7 +9,7 @@ var urlencodedParser = bodyParser.urlencoded({ extended: false })
 //lo utulizamos para peticiones POST a nuestro servidor.
 //constestara cuando realicemos un get y devuleve un html con contenigo
 app.get('/', function(req, res){
-  res.sendFile(__dirname + '/Calculador.html');
+  res.sendFile(__dirname + '/Calculador_json.html');
 });
 
 

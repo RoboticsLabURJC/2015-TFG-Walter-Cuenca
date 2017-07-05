@@ -44,7 +44,9 @@
 
 	function read_XML(fileXML){
 		//lectura de cada etiqueta
-		var root = fileXML.getElementsByTagName("respuesta")[0];
+		var dp = new DOMParser();
+        xml = dp.parseFromString(fileXML, "text/xml");
+		var root = xml.getElementsByTagName("respuesta")[0];
 		var mensajes = root.getElementsByTagName("resultado")[0];
       	var contenido = mensajes.firstChild.nodeValue;
       	logs(root);
@@ -61,8 +63,8 @@
   		xhttp.onreadystatechange = function() {
 	    	if (xhttp.readyState == 4 && xhttp.status == 200) {
 	    		logs("Recibo el contenido en formato XML")
-	      		logs(xhttp.responseXML);
-	      		var value = read_XML(xhttp.responseXML);
+	    		logs(xhttp.responseText)
+	      		var value = read_XML(xhttp.responseText);
 	      		document.getElementById("resultado").value = value;
    			}
    		};
